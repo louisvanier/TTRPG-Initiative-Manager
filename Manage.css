@@ -1,0 +1,103 @@
+.currentCharacter {
+    font-size: 2em;
+    border: 1px solid #333;
+    display: table-cell;
+    vertical-align:top;
+    padding: 0.4em;
+    min-width: 20em;
+}
+
+.currentCharacter li {
+    font-size: 1.3em;
+}
+
+
+.currentCharacter .currentCharacterEffects li {
+    padding: 0.3em;
+}
+
+.currentCharacter .currentCharacterEffects li, .currentCharacter .currentCharacterEffects button{
+    font-size: 0.5em;
+}
+
+.currentCharacterEffects .beneficial {
+    color: #202cb5;
+}
+
+.currentCharacterEffects .harmful {
+    color: #f14747;
+}
+
+.currentCharacterEffects .neutral {
+    color: #b2b56f;
+}
+
+.otherCharacters {
+    font-size: 1em;
+    border: 1px solid #ccc;
+}
+
+.listOfCharacters {
+    padding: 0;
+    vertical-align:top;
+    display: table-cell;
+}
+
+.listOfCharacters li {
+    min-width: 12em;
+    padding: 1.5em 1em;
+}
+
+
+.listOfCharacters .alreadyActed {
+    color: red;
+    font-size: 0.8em;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+}
+
+.listOfCharacters .outOfCombat {
+    color: #808080;
+    font-size: 0.8em;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 1em;
+}
+
+.listOfCharacters .aboutToAct {
+    color: green;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.listOfCharacters .currentlyActing {
+    border-right: none; position: relative; right: -1px; background-color: #fff; z-index: 1; border-left: 1px solid black; border-top: 1px solid black; border-bottom: 1px solid black;
+}
+
+.ui-selected {
+    background-color: #b2b56f
+}
+
+
+
+.effectTargets li {
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.selectedTarget {
+    background-color: #ccc;
+}
+
+.currentCharacterInfo span{
+    text-decoration: underline;
+}
+
+.eventLog {
+    height: 12em;
+    width: 30em;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+
+}

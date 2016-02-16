@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTRP - Manage a fight</title>
+    <link href="jquery-ui.structure.css" rel="stylesheet"/>
+<link href="jquery-ui.theme.css" rel="stylesheet"/>
+<link href="bootstrap.css" rel="stylesheet"/>
+<link href="toastr.css" rel="stylesheet"/>
+<link href="Manage.css" rel="stylesheet"/>
+    <link href="FontAwesome/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+</head>
+<body>
+    <div class="container body-content">
+		<div style="margin-bottom: 3em;">
+    <h2 data-bind="text: 'Fight! Round ' + CurrentRound()"></h2>
+    <button type="button" class="btn btn-danger" data-bind="click: NextCharacter, clickBubble: false, enable: CanGoToNextCharacter">Next!</button>
+    <button type="button" class="btn btn-primary" data-bind="click: showAddTrackableEffectDialog, clickBubble: false">Add effect</button>
+    <button type="button" class="btn btn-primary" data-bind="click: showAddCharacterDialog, clickBubble: false">Add Character</button>
+</div>
+<div>
+    <span>You may sort characters in the order simply by dragging them. Dragging the acting character will change the acting character to the next one before it moved in the order.</span>
+</div>
+<div style="display: table; clear:both;">
+    <ul data-bind="sortable: {data: Characters, afterMove: updateRankInCombatOrderAfterDrag}" class="listOfCharacters">
+        <li data-bind="css: $parent.ActingStatus(RankInCombatOrder), attr: { 'data-rankincombatorder': RankInCombatOrder}">
+            <div>
+                <div style="float: left;">
+                    <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button>
+                    <span data-bind="text: Name"></span>
+                </div>
+                <div style="float: right;">
+                    <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i>
+                    <i title="out of combat" data-bind="visible: OutOfCombat" class="fa fa-times"></i>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+            
+        </li>
+    </ul>
+    <div data-bind="with: CurrentCharacter" class="currentCharacter">
+        <div class="currentCharacterInfo">
+            <button type="button" title="Character is whitholding his action" class="btn btn-primary" data-bind="click: function() { $data.HasReadiedCurrentRound(true); $root.NextCharacter(); }, clickBubble: false">hold!</button>
+            <button type="button" title="take character out of combat" class="btn btn-danger" data-bind="click: function() { $data.TakeOut(); $root.NextCharacter(); }, clickBubble: false">X</button>
+            <span data-bind="text: Name"></span>
+        </div>
+        <ul data-bind="foreach: TrackableEffects" class="currentCharacterEffects">
+            <li data-bind="css: EffectTypeDisplay">
+                <button type="button" class="btn btn-danger" data-bind="click: function () {$parent.removeEffect($context.$index())}, clickBubble: false">X</button>
+                <span data-bind="text: Display"></span>                
+            </li>
+        </ul>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+
+
+
+<div class="modal fade" id="addTrackableEffectDialog" data-bind="with: NewTrackableEffect">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add an effect</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <select data-bind="options: $parent.Characters, optionsText: 'Name', optionsValue: 'RankInCombatOrder', value: RankInCombatOrder"></select>
+                    <input data-bind="value: Duration" type="number" />
+                    <input data-bind="value: Title" placeholder="Effect's title" />
+                    <input data-bind="value: Description" placeholder="Effect's description" />
+                    <select data-bind="options: $parent.TrackableEffectTypes, value: EffectType"></select>
+                </div>
+                <div class="effectTargets" data-bind="with: $parent">
+                    <p>Choose Targets</p>
+                    <ul data-bind="foreach: Characters">
+                        <li data-bind="toggle: $root.SelectedTargets, click: function() { $($element).toggleClass('selectedTarget');}">
+                            <span data-bind="text: Name"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="enable: $parent.CanAddNewEffect, click: function(data, event) {$parent.addTrackableEffect($data, $parent.SelectedTargets)}">Add Effect</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="addCharacterDialog" data-bind="with: NewCharacter">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add a new character</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    
+                    <select data-bind="options: $root.ValuesActBeforeNewCharacter, optionsText: 'Name', optionsValue: 'RankInCombatOrder', value: RankInCombatOrder"></select>
+                    <input data-bind="value: Name" placeholder="Character's Name"/>
+                    <label>
+                        <input data-bind="checked: IsPC" type="checkbox" />
+                        new character is a player?
+                    </label>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bind="enable: $parent.CanAddNewCharacter, click: $parent.addCharacter">Add Character</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div>
+    <h2>Event log</h2>
+    <div class="eventLog" data-bind="foreach: EventLogForDisplay">
+        <p data-bind="text: $data"></p>
+    </div>
+</div>
+	</div>
+	<script src="jquery-1.10.2.js"></script>
+<script src="jquery-ui.js"></script>
+<script src="jquery.touch-punch.js"></script>
+<script src="toastr.js"></script>
+
+    <script src="bootstrap.js"></script>
+<script src="respond.js"></script>
+
+    
+    <script src="Knockout.js"></script>
+<script src="Knockout.mapping.js"></script>
+<script src="Knockout.customBindings.js"></script>
+<script src="ViewModels.js"></script>
+</body>
