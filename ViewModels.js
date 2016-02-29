@@ -69,6 +69,12 @@
 
         var CharacterModel = function (characterData) {
             var self = this;
+            self.Label = ko.observable(characterData.Label);
+            self.Hits = ko.observable(characterData.Hits);
+        }
+
+        var ParticipantModel = function (characterData) {
+            var self = this;
             self.Name = ko.observable(characterData.Name);
             self.IsPC = ko.observable(characterData.IsPC);
             self.HasDelayedCurrentRound = ko.observable(characterData.HasDelayedCurrentRound);
@@ -76,6 +82,7 @@
             self.RankInCombatOrder = ko.observable(characterData.RankInCombatOrder);
             self.TrackableEffects = ko.observableArray(characterData.TrackableEffects);
             self.OutOfCombat = ko.observable(characterData.OutOfCombat);
+            self.Characters = ko.observableArray(characterData.Characters);
             self.addEffect = function (effectModel) {
                 self.TrackableEffects.push(effectModel);
                 self.TrackableEffects.sort(function (effectA, effectB) {
@@ -132,7 +139,7 @@
             self.CurrentRound = ko.observable(1);
             self.CurrentCharacterIndex = ko.observable(0);
             self.NewTrackableEffect = ko.observable(new TrackableEffectModel({}));
-            self.NewCharacter = ko.observable(new CharacterModel({}));
+            self.NewCharacter = ko.observable(new ParticipantModel({}));
             self.SelectedTargets = ko.observableArray([]);
             self.TrackableEffectTypes = ko.observableArray([constants.effectTypeBeneficial(), constants.effectTypeHarmful(), constants.effectTypeNeutral()]);
             self.EventLog = ko.observableArray([]);
@@ -147,9 +154,9 @@
 
             self.ValuesActBeforeNewCharacter = ko.computed(function () {
                 var array = ko.utils.arrayMap(self.Characters(), function (character) {
-                    return new CharacterModel({ Name: character.Name(), RankInCombatOrder: character.RankInCombatOrder (), IsPC: character.IsPC()})
+                    return new ParticipantModel({ Name: character.Name(), RankInCombatOrder: character.RankInCombatOrder (), IsPC: character.IsPC()})
                 })
-                array.unshift(new CharacterModel({ Name: 'First to act', RankInCombatOrder: -1, IsPC: false }));
+                array.unshift(new ParticipantModel({ Name: 'First to act', RankInCombatOrder: -1, IsPC: false }));
 
                 return array;
                 
@@ -194,7 +201,7 @@
             }
             self.addCharacter = function () {
                 var characterToAddRank = self.NewCharacter().RankInCombatOrder();
-                var clonedCharacter = new CharacterModel(ko.mapping.toJS(ko.unwrap(self.NewCharacter())));
+                var clonedCharacter = new ParticipantModel(ko.mapping.toJS(ko.unwrap(self.NewCharacter())));
                 ko.utils.arrayForEach(self.Characters(), function (character) {
                     if (character.RankInCombatOrder() >= characterToAddRank) {
                         character.RankInCombatOrder(character.RankInCombatOrder() + 1);
@@ -264,7 +271,7 @@
             }
 
             self.showAddCharacterDialog = function () {
-                self.NewCharacter(new CharacterModel({ Name: '', RankInCombatOrder: -1, IsPC: false }));
+                self.NewCharacter(new ParticipantModel({ Name: '', RankInCombatOrder: -1, IsPC: false }));
                 $('#addCharacterDialog').modal()
             }
 
@@ -279,11 +286,11 @@
         }
 
         var viewModel = new FightModel()
-        viewModel.addCharacterFromModel(0, new CharacterModel({ OutOfCombat: false, Name: 'Jimmy', IsPC: true, RankInCombatOrder: 0, TrackableEffects: [] }));
-        viewModel.addCharacterFromModel(1, new CharacterModel({ OutOfCombat: false, Name: 'Johnny', IsPC: true, RankInCombatOrder: 1, TrackableEffects: [] }));
-        viewModel.addCharacterFromModel(2, new CharacterModel({ OutOfCombat: false, Name: 'Gerry', IsPC: true, RankInCombatOrder: 2, TrackableEffects: [] }));
-        viewModel.addCharacterFromModel(3, new CharacterModel({ OutOfCombat: false, Name: 'Goblins', IsPC: false, RankInCombatOrder: 3, TrackableEffects: [] }));
-        viewModel.addCharacterFromModel(4, new CharacterModel({ OutOfCombat: false, Name: 'Trolls', IsPC: false, RankInCombatOrder: 4, TrackableEffects: [] }));
+        viewModel.addCharacterFromModel(0, new ParticipantModel({ OutOfCombat: false, Name: 'Jimmy', IsPC: true, RankInCombatOrder: 0, TrackableEffects: [] }));
+        viewModel.addCharacterFromModel(1, new ParticipantModel({ OutOfCombat: false, Name: 'Johnny', IsPC: true, RankInCombatOrder: 1, TrackableEffects: [] }));
+        viewModel.addCharacterFromModel(2, new ParticipantModel({ OutOfCombat: false, Name: 'Gerry', IsPC: true, RankInCombatOrder: 2, TrackableEffects: [] }));
+        viewModel.addCharacterFromModel(3, new ParticipantModel({ OutOfCombat: false, Name: 'Goblins', IsPC: false, RankInCombatOrder: 3, TrackableEffects: [] }));
+        viewModel.addCharacterFromModel(4, new ParticipantModel({ OutOfCombat: false, Name: 'Trolls', IsPC: false, RankInCombatOrder: 4, TrackableEffects: [] }));
         viewModel.addTrackableEffect(new TrackableEffectModel({ Title: "Barbarian's rage", Duration: 4, Description: '+2 on weapon damage rolls', RankInCombatOrder: 0, EffectType: 'Beneficial' }), viewModel.Characters)
         viewModel.addTrackableEffect(new TrackableEffectModel({ Title: "Alric's fear", Duration: 2, Description: '-2 on all rolls', RankInCombatOrder: 1, EffectType: 'harmful' }), viewModel.Characters)
         ko.applyBindings(viewModel);

@@ -49,6 +49,9 @@
             <button type="button" title="take character out of combat" class="btn btn-danger" data-bind="click: function() { $data.TakeOut(); $root.NextCharacter(); }, clickBubble: false">X</button>
             <span data-bind="text: Name"></span>
         </div>
+        <div data-bind="foreach: Characters" class="characterList">
+
+        </div>
         <ul data-bind="foreach: TrackableEffects" class="currentCharacterEffects">
             <li data-bind="css: EffectTypeDisplay">
                 <button type="button" class="btn btn-danger" data-bind="click: function () {$parent.removeEffect($context.$index())}, clickBubble: false">X</button>
