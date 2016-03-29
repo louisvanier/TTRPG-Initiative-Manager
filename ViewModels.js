@@ -75,14 +75,25 @@
 
         var ParticipantModel = function (characterData) {
             var self = this;
+
+            //basic participant properties
             self.Name = ko.observable(characterData.Name);
             self.IsPC = ko.observable(characterData.IsPC);
             self.HasDelayedCurrentRound = ko.observable(characterData.HasDelayedCurrentRound);
             self.HasReadiedCurrentRound = ko.observable(characterData.HasReadiedCurrentRound);
             self.RankInCombatOrder = ko.observable(characterData.RankInCombatOrder);
-            self.TrackableEffects = ko.observableArray(characterData.TrackableEffects);
             self.OutOfCombat = ko.observable(characterData.OutOfCombat);
+
+            //characters (mostly for managing several mobs at once)
             self.Characters = ko.observableArray(characterData.Characters);
+            self.Character = ko.observable();
+            self.CharacterUndo = null;
+            self.characterModal = $('#characterModal');
+
+            //trackable effects are buffs, debuffs or just conditions that will expire
+            self.TrackableEffects = ko.observableArray(characterData.TrackableEffects);
+
+            //effects related functions
             self.addEffect = function (effectModel) {
                 self.TrackableEffects.push(effectModel);
                 self.TrackableEffects.sort(function (effectA, effectB) {
@@ -128,6 +139,27 @@
             self.removeAllEffects = function () {
                 self.TrackableEffects.removeAll();
             }
+
+            //character related functions
+             //Cancel an edit                
+            this.cancel = function() {
+                self.Character(ko.mapping.fromJS(self.venueUndo));
+                characterModal.modal("hide");
+            }
+
+            //Edit an existing character
+            this.edit = function(venue) {
+                self.Character(venue);
+                self.venueUndo = ko.mapping.toJS(venue);
+                characterModal.modal("show");
+            };
+
+            //Create a new character
+            this.create = function() {
+                self.Character(new Venue());
+                characterModal.modal("show");
+            };
+
             self.TakeOut = function () {
                 self.OutOfCombat(true);
                 viewModel.EventLog.push('(round ' + viewModel.CurrentRound() + ') ' + self.Name() + ' => Taken out of combat' + (viewModel.IsCurrentCharacter(self.RankInCombatOrder) ? ' on his own turn' : ' on ' + viewModel.CurrentCharacter().Name() + "'s turn"));
@@ -211,7 +243,7 @@
                 if (self.CurrentCharacterIndex() >= characterToAddRank) {
                     self.CurrentCharacterIndex(self.CurrentCharacterIndex() + 1);
                 }
-                $('#addCharacterDialog').modal('hide');
+                $('#addParticipantDialog').modal('hide');
             }
             self.addCharacterFromModel = function (rankInCombatOrder, model) {
                 self.Characters.splice(rankInCombatOrder, 0, model);
@@ -270,9 +302,9 @@
                 $('#addTrackableEffectDialog').modal()
             }
 
-            self.showAddCharacterDialog = function () {
+            self.showAddParticipantDialog = function () {
                 self.NewCharacter(new ParticipantModel({ Name: '', RankInCombatOrder: -1, IsPC: false }));
-                $('#addCharacterDialog').modal()
+                $('#addParticipantDialog').modal()
             }
 
 

@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +21,7 @@
     <h2 data-bind="text: 'Fight! Round ' + CurrentRound()"></h2>
     <button type="button" class="btn btn-danger" data-bind="click: NextCharacter, clickBubble: false, enable: CanGoToNextCharacter">Next!</button>
     <button type="button" class="btn btn-primary" data-bind="click: showAddTrackableEffectDialog, clickBubble: false">Add effect</button>
-    <button type="button" class="btn btn-primary" data-bind="click: showAddCharacterDialog, clickBubble: false">Add Character</button>
+    <button type="button" class="btn btn-primary" data-bind="click: showAddParticipantDialog, clickBubble: false">Add Character</button>
 </div>
 <div>
     <span>You may sort characters in the order simply by dragging them. Dragging the acting character will change the acting character to the next one before it moved in the order.</span>
@@ -96,7 +97,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal fade" id="addCharacterDialog" data-bind="with: NewCharacter">
+<div class="modal fade" id="addParticipantDialog" data-bind="with: NewCharacter">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
