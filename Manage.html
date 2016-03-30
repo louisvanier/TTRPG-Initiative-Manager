@@ -98,12 +98,12 @@
     <script src="Knockout.js"></script>
 <script src="Knockout.mapping.js"></script>
 <script src="Knockout.customBindings.js"></script>
-<script src="BaseViewModel.js"></script>
+<script src="ViewModels.js"></script>
 <script>
   var viewModel = new FightModel({
     currentRound: 1,
     characters: [{name: 'Alpha', rankInCombat: 1}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
-    effects: []
+    effects: [{name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Alpha', effectType: window.Constants.effectTypeNeutral()}]
   });
   ko.applyBindings(viewModel);
 </script>

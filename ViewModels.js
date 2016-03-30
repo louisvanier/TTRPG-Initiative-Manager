@@ -1,41 +1,40 @@
-
-var constants = (function() {
-    var instance = {};
+//constant values and references
+(function(cons) {
     var effectTypeBeneficial = 'beneficial';
     var effectTypeNeutral = 'neutral';
     var effectTypeHarmful = 'harmful';
     var effectDurationForever = -1;
 
-    instance.effectTypeBeneficial = function () {
+    cons.effectTypeBeneficial = function () {
                 return effectTypeBeneficial;
     }
-    instance.effectTypeNeutral = function () {
+    cons.effectTypeNeutral = function () {
         return effectTypeNeutral;
     }
-    instance.effectTypeHarmful = function () {
+    cons.effectTypeHarmful = function () {
         return effectTypeHarmful;
     }
 
-    instance.effectDurationForever = function () {
+    cons.effectDurationForever = function () {
         return effectDurationForever;
     }
 
-    return instance
-})();
+    return cons
+})(window.Constants = window.Constants || {});
 
 //Model for a character in a fight
 //  data => Character data and specifications
-//  services => Injected services, such as logger
-var Character = function(data, services) {
-    this.name = ko.observable();
-    this.rankInCombat = ko.observable();
-    this.outOfCombat = ko.observable();
+var Character = function(data) {
+	var self = this;
+    self.name = ko.observable();
+    self.rankInCombat = ko.observable();
+    self.outOfCombat = ko.observable();
 
-    this.update(data);
+    self.update(data);
 };
 
 //can pass fresh data to this function at anytime to apply updates or revert to a prior version
-Character.prototype.update = function(data, services) { 
+Character.prototype.update = function(data) { 
     //the character's name
     this.name(data.name || "New Character");
 
@@ -48,21 +47,29 @@ Character.prototype.update = function(data, services) {
 
 //Model for a trackable effect in a fight (buffs, debuffs, conditions)
 //  data => Effect data and specifications
-//  services => Injected services, such as logger
-var TrackableEffect = function(data, services) {
+var TrackableEffect = function(data) {
+	var self = this;
+
     //friendly display for the effect
-    this.name = ko.observable();
-    this.description = ko.observable();
+    self.name = ko.observable();
+    self.description = ko.observable();
 
     //the duration in rounds of the effect. Some effects have a special duration which means it is not tracked
-    this.duration = ko.observable();
+    self.duration = ko.observable();
 
     //the effect type (beneficial, neutral, harmful
-    this.effectType = ko.observable();
+    self.effectType = ko.observable();
 
     //the rank at which the effect came into the fight, and at which it will decrease its duration
-    this.rankInCombatOrder = ko.observable();
-
+    self.rankInCombat = ko.observable();
+	
+	//the character this effect is applied to
+	self.character = ko.observable();
+	self.characterName = ko.computed(function () { 
+		return self.character() ? self.character().name() : ''; 
+	});
+	
+	self.update(data);
 }
 
 TrackableEffect.prototype.update = function(data) {
@@ -70,46 +77,45 @@ TrackableEffect.prototype.update = function(data) {
     this.description(data.description || "description missing");
     this.duration(data.duration || constants.effectDurationForever());
     this.effectType(data.effectType || constants.effectTypeNeutral());
-    this.rankInCombatOrder(data.rankInCombatOrder || 0);
+    this.rankInCombat(data.rankInCombat || 0);
 }
 
 var FightModel = function(fightData) {
-    
-    this.currentRound = ko.observable(fightData.currentRound);
-
+    var self = this;
+    self.currentRound = ko.observable(fightData.currentRound);
 
     //Load characters
-    this.characters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
-        return new Character(data);
+    self.characters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
+		var newCharacter = new Character(data);
+        return newCharacter;
     }));
     
-    //hold the currently selected character
-    this.selectedCharacter = ko.observable();
-    
-    //make edits to a copy
-    this.characterForEditing = ko.observable();
-    
-    this.selectCharacter = this.selectCharacter.bind(this);
-    this.acceptCharacter = this.acceptCharacter.bind(this);
-    this.revertCharacter = this.revertCharacter.bind(this);
-    this.addCharacter = this.addCharacter.bind(this);
-    this.addingNewCharacter = false;
+    //functions and observables to add/edit/cancel the edition of a new character
+    self.selectedCharacter = ko.observable();
+    self.characterForEditing = ko.observable();
+    self.selectCharacter = self.selectCharacter.bind(this);
+    self.acceptCharacter = self.acceptCharacter.bind(this);
+    self.revertCharacter = self.revertCharacter.bind(this);
+    self.addCharacter = self.addCharacter.bind(this);
+    self.addingNewCharacter = false;
 
     //Load trackable effects
-    this.effects = ko.observableArray(ko.utils.arrayMap(fightData.effects, function(data) {
-        return new TrackableEffect(data);
+    self.effects = ko.observableArray(ko.utils.arrayMap(fightData.effects, function(data) {
+		var newEffect = new TrackableEffect(data);
+		newEffect.character(ko.utils.arrayFirst(self.characters(), ch => ch.name() === data.characterName));
+        return newEffect;
     }));
 
-    //hold the currently selected effect
-    this.selectedEffect = ko.observable();
-
-    this.effectForEditing = ko.observable();
-
-    this.selectEffect = this.selectEffect.bind(this);
-    this.acceptEffect = this.acceptEffect.bind(this);
-    this.revertEffect = this.revertEffect.bind(this);
-    this.addEffect = this.addEffect.bind(this);
-    this.addingNewEffect = false;
+    //functions and observables to add/edit/cancel the edition of a new effect
+    self.selectedEffect = ko.observable();
+    self.effectForEditing = ko.observable();
+    self.selectEffect = self.selectEffect.bind(this);
+    self.acceptEffect = self.acceptEffect.bind(this);
+    self.revertEffect = self.revertEffect.bind(this);
+    self.addEffect = self.addEffect.bind(this);
+    self.addingNewEffect = self;
+	
+	
 
 
 };
