@@ -13,7 +13,12 @@
 
 </head>
 <body>
-
+<div style="margin-bottom: 3em;">
+    <h2 data-bind="text: 'Fight! Round ' + currentRound()"></h2>
+</div>
+<div>
+	<button type="button" class="btn btn-danger" data-bind="click: nextCharacter, clickBubble: false, enable: canGoToNextCharacter">Next!</button>
+</div>
 <div>
   <button type="button" class="btn btn-primary" data-bind="click: addCharacter, clickBubble: false">Add Character</button>
   <button type="button" class="btn btn-primary" data-bind="click: addEffect, clickBubble: false">Add an effect</button>
@@ -81,7 +86,7 @@
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="characterRank">Price</label>
+        <label class="control-label" for="characterRank">Rank in combat</label>
         <div class="controls">
             <input type="number" step="1" id="characterRank" data-bind="value: rankInCombat" />
         </div>

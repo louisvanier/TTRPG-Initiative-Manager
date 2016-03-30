@@ -101,7 +101,7 @@ TrackableEffect.prototype.update = function(data) {
 
 var FightModel = function(fightData) {
     var self = this;
-    self.currentRound = ko.observable(fightData.currentRound);
+    
 
     //Load characters
     self.allCharacters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
@@ -156,7 +156,26 @@ var FightModel = function(fightData) {
 		//TODO => dive deeper, why do we have to notify manually that there was a change?
 		self.effects.valueHasMutated();
 	}
-
+	
+	
+	//round management related functions
+	self.currentRound = ko.observable(fightData.currentRound);
+	self.currentRankInCombat = ko.observable(fightData.currentRankInCombat || 0);
+	
+	self.canGoToNextCharacter = ko.pureComputed(function () {
+		return self.allCharacters().length > 1;
+	})
+	
+	self.nextCharacter = function() {
+		//have we reached the end of all characters?
+		if (self.currentRankInCombat() === self.allCharacters().length - 1) {
+			//reset the status of all characters except the ready status
+			ko.utils.arrayForEach(self.allCharacters.filter(cha => cha.status() !== window.Constants.characterStatusReadying()), ch => ch.status(window.Constants.characterStatusAboutToAct()))
+			self.currentRound(self.currentRound() + 1);
+		}
+	
+		self.currentRankInCombat(self.currentRankInCombat() === self.allCharacters().length - 1 ? 0 : self.currentRankInCombat() + 1);
+	}
 
 };
 
@@ -172,7 +191,7 @@ ko.utils.extend(FightModel.prototype, {
             edited = ko.toJS(this.characterForEditing()); //clean copy of edited
         
         if (this.addingNewCharacter()) {
-            this.characters.push(new Character(edited));
+            this.allCharacters.push(new Character(edited));
         } else {
             //apply updates from the edited character to the selected character
             selected.update(edited);
