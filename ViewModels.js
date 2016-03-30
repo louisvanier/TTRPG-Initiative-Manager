@@ -1,23 +1,42 @@
 //constant values and references
 (function(cons) {
-    var effectTypeBeneficial = 'beneficial';
-    var effectTypeNeutral = 'neutral';
-    var effectTypeHarmful = 'harmful';
-    var effectDurationForever = -1;
 
+	// effectTypes
+    
     cons.effectTypeBeneficial = function () {
-                return effectTypeBeneficial;
+                return 'beneficial';
     }
     cons.effectTypeNeutral = function () {
-        return effectTypeNeutral;
+        return 'neutral';
     }
     cons.effectTypeHarmful = function () {
-        return effectTypeHarmful;
+        return 'harmful';
     }
 
+	//effectDurations
     cons.effectDurationForever = function () {
-        return effectDurationForever;
+        return -1;
     }
+	
+	//characterStatuses
+	cons.characterStatusReadying = function() {
+		return 'Readying';
+	}
+	cons.characterStatusCurrentlyActing = function() {
+		return 'CurrentlyActing';
+	}
+	cons.characterStatusDelaying = function() {
+		return 'Delaying';
+	}
+	cons.characterStatusAboutToAct = function() {
+		return 'AboutToAct';
+	}
+	cons.characterStatusOutOfCombat = function() {
+		return 'OutOfCombat';
+	}
+	cons.characterStatusAlreadyActed = function() {
+		return 'AlreadyActed';
+	}
 
     return cons
 })(window.Constants = window.Constants || {});
@@ -28,7 +47,7 @@ var Character = function(data) {
 	var self = this;
     self.name = ko.observable();
     self.rankInCombat = ko.observable();
-    self.outOfCombat = ko.observable();
+    self.status = ko.observable();
 
     self.update(data);
 };
@@ -42,7 +61,7 @@ Character.prototype.update = function(data) {
     this.rankInCombat(data.rankInCombat);
 
     //a flag to indicate the character is out of combat. 
-    this.outOfCombat(data.outOfCombat || false);
+    this.status(data.status || window.Constants.characterStatusAboutToAct());
 };
 
 //Model for a trackable effect in a fight (buffs, debuffs, conditions)
@@ -85,10 +104,26 @@ var FightModel = function(fightData) {
     self.currentRound = ko.observable(fightData.currentRound);
 
     //Load characters
-    self.characters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
+    self.allCharacters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
 		var newCharacter = new Character(data);
         return newCharacter;
     }));
+	
+	//return only characters that are not knocked out
+	self.inCombatCharacters = ko.computed(function() {
+		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() !== window.Constants.characterStatusOutOfCombat());
+	});
+	
+	self.alreadyPlayedCharacters = ko.computed(function() {
+		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() === window.Constants.characterStatusAboutToAct() 
+															
+															|| ch.status() === window.Constants.characterStatusReadying()
+															|| ch.status() === window.Constants.characterStatusAlreadyActed());
+	});
+	self.haventPlayedYetCharacters = ko.computed(function() {
+		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() === window.Constants.characterStatusAboutToAct
+															|| ch.status() === window.Constants.characterStatusDelaying());
+	});
     
     //functions and observables to add/edit/cancel the edition of a new character
     self.selectedCharacter = ko.observable();
@@ -102,7 +137,7 @@ var FightModel = function(fightData) {
     //Load trackable effects
     self.effects = ko.observableArray(ko.utils.arrayMap(fightData.effects, function(data) {
 		var newEffect = new TrackableEffect(data);
-		newEffect.character(ko.utils.arrayFirst(self.characters(), ch => ch.name() === data.characterName));
+		newEffect.character(ko.utils.arrayFirst(self.allCharacters(), ch => ch.name() === data.characterName));
         return newEffect;
     }));
 
@@ -114,8 +149,14 @@ var FightModel = function(fightData) {
     self.revertEffect = self.revertEffect.bind(this);
     self.addEffect = self.addEffect.bind(this);
     self.addingNewEffect = self;
+	self.characterForEditingEffects = self.effects.filter(effect => effect.character() === self.selectedCharacter());
 	
-	
+	//functions to manage effects
+	self.removeEffect = function(effect) {
+		console.log('inside remove effect');
+		console.log(effect);
+		ko.utils.arrayRemoveItem(self.effects(), effect);
+	}
 
 
 };

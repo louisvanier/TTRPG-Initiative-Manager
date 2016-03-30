@@ -19,17 +19,17 @@
 </div>
 
 <div style="display: table; clear:both;">
-<ul data-bind="foreach: characters" class="listOfCharacters">
+<ul data-bind="foreach: allCharacters" class="listOfCharacters">
     <li>
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name"></span>
+                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
                     <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
                     <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
-                    <i title="out of combat" data-bind="visible: outOfCombat" class="fa fa-times"></i>
+                    <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i>
                 </div>
                 <div style="clear: both;"></div>
             </div>
@@ -53,6 +53,14 @@
             <input type="number" step="1" id="characterRank" data-bind="value: rankInCombat" />
         </div>
       </div>
+	  <div>
+	  </div>
+	  <div data-bind="foreach: $parent.characterForEditingEffects">
+		<div>
+			<span data-bind="text: name"></span>
+			<button type="button" class="btn btn-danger" data-bind="click: function() {$root.removeEffect($data)}, clickBubble: false">X</button>
+		</div>
+	  </div>
       <div class="control-group">
         <div class="controls">
           <button class="btn" data-bind="click: $parent.acceptCharacter">Accept</button>
@@ -98,8 +106,11 @@
     <script src="Knockout.js"></script>
 <script src="Knockout.mapping.js"></script>
 <script src="Knockout.customBindings.js"></script>
+<script src="Knockout.projections.js"></script>
 <script src="ViewModels.js"></script>
 <script>
+  
+  ko.options.deferUpdates = true;
   var viewModel = new FightModel({
     currentRound: 1,
     characters: [{name: 'Alpha', rankInCombat: 1}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
