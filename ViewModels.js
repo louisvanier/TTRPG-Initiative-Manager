@@ -110,20 +110,16 @@ var FightModel = function(fightData) {
     }));
 	
 	//return only characters that are not knocked out
-	self.inCombatCharacters = ko.computed(function() {
-		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() !== window.Constants.characterStatusOutOfCombat());
-	});
+	self.inCombatCharacters = self.allCharacters.filter( ch => ch.status() !== window.Constants.characterStatusOutOfCombat());
 	
-	self.alreadyPlayedCharacters = ko.computed(function() {
-		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() === window.Constants.characterStatusAboutToAct() 
-															
+	//return characters that are in statuses where they've already spend their turn
+	self.alreadyPlayedCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusAboutToAct() 
 															|| ch.status() === window.Constants.characterStatusReadying()
 															|| ch.status() === window.Constants.characterStatusAlreadyActed());
-	});
-	self.haventPlayedYetCharacters = ko.computed(function() {
-		return ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() === window.Constants.characterStatusAboutToAct
+															
+	//return  characters that are in statuses where they haven't already acted this turn
+	self.haventPlayedYetCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusAboutToAct
 															|| ch.status() === window.Constants.characterStatusDelaying());
-	});
     
     //functions and observables to add/edit/cancel the edition of a new character
     self.selectedCharacter = ko.observable();
@@ -153,9 +149,9 @@ var FightModel = function(fightData) {
 	
 	//functions to manage effects
 	self.removeEffect = function(effect) {
-		console.log('inside remove effect');
-		console.log(effect);
 		ko.utils.arrayRemoveItem(self.effects(), effect);
+		//TODO => dive deeper, why do we have to notify manually that there was a change?
+		self.effects.valueHasMutated();
 	}
 
 
