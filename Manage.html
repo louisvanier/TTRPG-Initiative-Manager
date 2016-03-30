@@ -16,10 +16,11 @@
 
 <div>
   <button type="button" class="btn btn-primary" data-bind="click: addCharacter, clickBubble: false">Add Character</button>
+  <button type="button" class="btn btn-primary" data-bind="click: addEffect, clickBubble: false">Add an effect</button>
 </div>
 
 <div style="display: table; clear:both;">
-<ul data-bind="foreach: allCharacters" class="listOfCharacters">
+<ul data-bind="foreach: alreadyPlayedCharacters" class="listOfCharacters">
     <li>
         <div>
                 <div style="float: left;">
@@ -29,7 +30,39 @@
                 <div style="float: right;">
                     <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
                     <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
-                    <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i>
+                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+    </li>
+</ul>
+<ul data-bind="foreach: currentlyActingCharacters" class="listOfCharacters">
+    <li>
+        <div>
+                <div style="float: left;">
+                    <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
+                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
+                </div>
+                <div style="float: right;">
+                    <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+    </li>
+</ul>
+<ul data-bind="foreach: haventPlayedYetCharacters" class="listOfCharacters">
+    <li>
+        <div>
+                <div style="float: left;">
+                    <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
+                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
+                </div>
+                <div style="float: right;">
+                    <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
                 </div>
                 <div style="clear: both;"></div>
             </div>
@@ -80,10 +113,11 @@
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="itemPrice">Price</label>
-        <div class="controls">
-            <input type="number" step="1" id="itemPrice" data-bind="value: price" />
+        <label class="control-label" for="effectDuration">Price</label>
+		<div class="controls">
+            <input type="number" step="1" id="effectDuration" data-bind="value: duration" />
         </div>
+		<span class="additionnalExplanations">A duration of -1 means this effect's duration should not be tracked</span>
       </div>
       <div class="control-group">
         <div class="controls">

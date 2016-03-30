@@ -94,8 +94,8 @@ var TrackableEffect = function(data) {
 TrackableEffect.prototype.update = function(data) {
     this.name(data.name || "New Trackable Effect");
     this.description(data.description || "description missing");
-    this.duration(data.duration || constants.effectDurationForever());
-    this.effectType(data.effectType || constants.effectTypeNeutral());
+    this.duration(data.duration || window.Constants.effectDurationForever());
+    this.effectType(data.effectType || window.Constants.effectTypeNeutral());
     this.rankInCombat(data.rankInCombat || 0);
 }
 
@@ -120,6 +120,9 @@ var FightModel = function(fightData) {
 	//return  characters that are in statuses where they haven't already acted this turn
 	self.haventPlayedYetCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusAboutToAct
 															|| ch.status() === window.Constants.characterStatusDelaying());
+	
+	//return all the characters that have the status saying they are currently action
+	self.currentlyActingCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusCurrentlyActing());
     
     //functions and observables to add/edit/cancel the edition of a new character
     self.selectedCharacter = ko.observable();
@@ -128,7 +131,7 @@ var FightModel = function(fightData) {
     self.acceptCharacter = self.acceptCharacter.bind(this);
     self.revertCharacter = self.revertCharacter.bind(this);
     self.addCharacter = self.addCharacter.bind(this);
-    self.addingNewCharacter = false;
+    self.addingNewCharacter = ko.observable(false);
 
     //Load trackable effects
     self.effects = ko.observableArray(ko.utils.arrayMap(fightData.effects, function(data) {
@@ -144,7 +147,7 @@ var FightModel = function(fightData) {
     self.acceptEffect = self.acceptEffect.bind(this);
     self.revertEffect = self.revertEffect.bind(this);
     self.addEffect = self.addEffect.bind(this);
-    self.addingNewEffect = self;
+    self.addingNewEffect = ko.observable(false);
 	self.characterForEditingEffects = self.effects.filter(effect => effect.character() === self.selectedCharacter());
 	
 	//functions to manage effects
@@ -168,7 +171,7 @@ ko.utils.extend(FightModel.prototype, {
         var selected = this.selectedCharacter(),
             edited = ko.toJS(this.characterForEditing()); //clean copy of edited
         
-        if (this.addingNewCharacter) {
+        if (this.addingNewCharacter()) {
             this.characters.push(new Character(edited));
         } else {
             //apply updates from the edited character to the selected character
@@ -176,7 +179,7 @@ ko.utils.extend(FightModel.prototype, {
         }
         
         //always clear this flag
-        this.addingNewCharacter = false;
+        this.addingNewCharacter(false);
         //clear selected item
         this.selectedCharacter(null);
         this.characterForEditing(null);
@@ -184,13 +187,13 @@ ko.utils.extend(FightModel.prototype, {
     
     //just throw away the edited item and clear the selected observables
     revertCharacter: function() {
-        this.addingNewCharacter = false;
+        this.addingNewCharacter(false);
         this.selectedCharacter(null);
         this.characterForEditing(null);
     },
 
     addCharacter: function() {
-        this.addingNewCharacter = true;
+        this.addingNewCharacter(true);
         var newCharacter = new Character({})
         this.selectedCharacter(newCharacter);
         this.characterForEditing(newCharacter);
@@ -206,7 +209,7 @@ ko.utils.extend(FightModel.prototype, {
         var selected = this.selectedEffect(),
             edited = ko.toJS(this.effectForEditing()); //clean copy of edited
         
-        if (this.addingNewEffect) {
+        if (this.addingNewEffect()) {
             //we're adding a new effect
             this.effects.push(new TrackableEffect(edited));
         }
@@ -222,14 +225,14 @@ ko.utils.extend(FightModel.prototype, {
     
     //just throw away the edited item and clear the selected observables
     revertEffect: function() {
-        this.addingNewEffect = false;
+        this.addingNewEffect(false);
         this.selectedEffect(null);
         this.effectForEditing(null);
     },
 
     addEffect: function() {
-        this.addingNewEffect = true;
-        var newEffect = new Effect({})
+        this.addingNewEffect(true);
+        var newEffect = new TrackableEffect({})
         this.selectedEffect(newEffect);
         this.effectForEditing(newEffect);
     }
