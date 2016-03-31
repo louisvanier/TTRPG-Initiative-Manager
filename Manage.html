@@ -27,50 +27,50 @@
 <div style="clear:both;">
 <ul data-bind="sortable: {data: alreadyPlayedCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="alreadyPlayed">
-        <div>
-                <div style="float: left;">
-                    <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name() + ' -> already acted', click: $parent.selectCharacter"></span>
-                </div>
-                <div style="float: right;">
-                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
-                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
-                </div>
-                <div style="clear: both;"></div>
-            </div>
+        <div data-bind="click: $parent.selectCharacter">
+			<div style="float: left;">
+				<!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
+				<span data-bind="text: name, click: $parent.selectCharacter"></span>
+			</div>
+			<div style="float: right;">
+				<i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+				<!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+				<!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
+			</div>
+			<div style="clear: both;"></div>
+		</div>
     </li>
 </ul>
 <ul data-bind="sortable: {data: currentlyActingCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="currentlyActing">
-        <div>
-                <div style="float: left;">
-                    <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name() + ' -> currently acting', click: $parent.selectCharacter"></span>
-                </div>
-                <div style="float: right;">
-                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> --> -->
-                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
-                </div>
-                <div style="clear: both;"></div>
-            </div>
+        <div data-bind="click: $parent.selectCharacter">
+			<div style="float: left;">
+				<!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
+				<span data-bind="text: name, click: $parent.selectCharacter"></span>
+			</div>
+			<div style="float: right;">
+				<i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+				<!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+				<!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
+			</div>
+			<div style="clear: both;"></div>
+		</div>
     </li>
 </ul>
 <ul data-bind="sortable: {data: haventPlayedYetCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="hasntPlayed">
-        <div>
-                <div style="float: left;">
-                    <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name() + ' -> havent played yet', click: $parent.selectCharacter"></span>
-                </div>
-                <div style="float: right;">
-                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> --> -->
-                    <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
-                </div>
-                <div style="clear: both;"></div>
-            </div>
+        <div data-bind="click: $parent.selectCharacter">
+			<div style="float: left;">
+				<!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
+				<span data-bind="text: name"></span>
+			</div>
+			<div style="float: right;">
+				<i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+				<!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+				<!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
+			</div>
+			<div style="clear: both;"></div>
+		</div>
     </li>
 </ul>
 </div>
@@ -96,7 +96,7 @@
 	  </div>
 	  <div data-bind="foreach: $parent.characterForEditingEffects">
 		<div>
-			<span data-bind="text: name"></span>
+			<span data-bind="text: name() + ' (' + durationFormatted() + ' rnds)'"></span>
 			<button type="button" class="btn btn-danger" data-bind="click: function() {$root.removeEffect($data)}, clickBubble: false">X</button>
 		</div>
 	  </div>
@@ -111,7 +111,7 @@
 
 
 <div data-bind="with: effectForEditing">
-    <form class="form-horizontal">
+    <form class="form-horizontal container">
       <div class="control-group">
         <label class="control-label" for="itemName">Name</label>
         <div class="controls">
@@ -126,11 +126,11 @@
 			<span class="additionnalExplanations">A duration of -1 means this effect's duration should not be tracked</span>
         </div>
 		
-		<!-- <label class="control-label" for="effectCreator">Creator of the effect</label>
-		<div class="controls>
-			<select id="effectCreator" data-bind="options: $parent.allCharacters, optionsText: 'name', optionsValue: 'rankInCombat', value: rankInCombat"></select>
-		</div> -->
-		<div class="effectTargets" data-bind="$root.addingNewEffect">
+		<label class="control-label" for="effectCreator">creator of the effect</label>
+		<div class="controls">
+			<select id="effectCreator" data-bind="options: $root.allCharacters, optionsText: 'name', optionsValue: 'rankInCombat', value: rankInCombat"></select>
+		</div>
+		<div class="effectTargets container" data-bind="$root.addingNewEffect">
 			<p>Choose Targets</p>
 			<ul data-bind="foreach: $root.allCharacters">
 				<li data-bind="toggle: $root.selectedTargets, click: function() { $($element).toggleClass('selectedTarget');}">
@@ -139,7 +139,7 @@
 			</ul>
 		</div>
       </div>
-      <div class="control-group">
+      <div class="control-group container">
         <div class="controls">
           <button class="btn" data-bind="click: $parent.acceptEffect">Accept</button>
           <button class="btn" data-bind="click: $parent.revertEffect">Cancel</button>
@@ -163,18 +163,33 @@
 <script src="Knockout.projections.js"></script>
 <script src="ViewModels.js"></script>
 <script>
+
+	toastr.options = {
+            closeButton: true,
+            newestOnTop: false,
+            positionClass: "toast-bottom-left",
+            showDuration: 200,
+            hideDuration: 500
+        };
   
   ko.options.deferUpdates = true;
   var viewModel = new FightModel({
     currentRound: 1,
     characters: [{name: 'Alpha', rankInCombat: 1, status: window.Constants.characterStatusCurrentlyActing()}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
-    effects: [{name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Alpha', effectType: window.Constants.effectTypeNeutral()}]
+    effects: [{name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Alpha', effectType: window.Constants.effectTypeNeutral()},
+			  {name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Beta', effectType: window.Constants.effectTypeNeutral()}]
   }, {
 	sortCanceled: function(eventData) { 
+		toastr.error("Cannot delay a character when it isn't said character's turn to act. Prevented delaying of \"" + eventData.character.name() + "\"");
 		console.log(eventData.character.name());
 	},
 	newRoundBeginning: function(eventData) {
+		toastr.success('round ' + eventData.round + ' has just begun');
 		console.log('round ' + eventData.round + ' has just begun');
+	},
+	effectRemoved: function(eventData) {
+		toastr.warning('round ' + eventData.round + ', effect "' + eventData.effectName + '" on "' + eventData.effectTarget + '" was removed');
+		console.log('round ' + eventData.round + ', effect "' + eventData.effectName + '" on "' + eventData.effectTarget + '" was removed');
 	}
   });
   ko.applyBindings(viewModel);

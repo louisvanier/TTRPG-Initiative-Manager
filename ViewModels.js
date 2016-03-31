@@ -89,6 +89,10 @@ var TrackableEffect = function(data) {
 
     //the duration in rounds of the effect. Some effects have a special duration which means it is not tracked
     self.duration = ko.observable();
+	self.durationFormatted = ko.pureComputed(function() {
+		//return the unicode symbol for infinity when duration is -1, it is treated as such anyway. Otherwise return the duration as a string.
+		return self.duration() === -1 ? "\u221E" : self.duration() + "";
+	});
 
     //the effect type (beneficial, neutral, harmful
     self.effectType = ko.observable();
@@ -98,7 +102,7 @@ var TrackableEffect = function(data) {
 	
 	//the character this effect is applied to
 	self.character = ko.observable();
-	self.characterName = ko.computed(function () { 
+	self.characterName = ko.pureComputed(function () { 
 		return self.character() ? self.character().name() : ''; 
 	});
 	
@@ -110,7 +114,7 @@ TrackableEffect.prototype.update = function(data) {
     this.description(data.description || "description missing");
     this.duration(data.duration || Constants.effectDurationForever());
     this.effectType(data.effectType || Constants.effectTypeNeutral());
-    this.rankInCombat(data.rankInCombat || 0);
+    this.rankInCombat(data.rankInCombat || 1);
 }
 
 var FightModel = function(fightData, eventCallbacks) {
@@ -170,8 +174,29 @@ var FightModel = function(fightData, eventCallbacks) {
 	
 	//functions to manage effects
 	self.removeEffect = function(effect) {
+		fireEventCallback('effectRemoved', {round: self.currentRound(), effectName: effect.name(), effectTarget: effect.characterName()});
+	
 		ko.utils.arrayRemoveItem(self.effects(), effect);
 		//TODO => dive deeper, why do we have to notify manually that there was a change? problem seems to rely in characterForEditingEffects
+		self.effects.valueHasMutated();
+	}
+	self.removeEffectList = function(effects) {
+		//TODO => raise an effectRemoved event at once, concatenating all the effects properly per effect
+		var effectsRemoved = {}
+	
+		ko.utils.arrayForEach(effects, function (effect) { 
+			if (!effectsRemoved[effect.name()]) {
+				effectsRemoved[effect.name()] = effect.characterName();
+			} else {
+				effectsRemoved[effect.name()] += (', ' + effect.characterName());
+			}
+			ko.utils.arrayRemoveItem(self.effects(), effect)
+		});
+		
+		ko.utils.objectForEach(effectsRemoved, function(key, value) {
+			fireEventCallback('effectRemoved', {round: self.currentRound(), effectName: key, effectTarget: value});
+		});
+		
 		self.effects.valueHasMutated();
 	}
 	
@@ -202,7 +227,13 @@ var FightModel = function(fightData, eventCallbacks) {
 		//set everyone in the currentRank as currentlyActingCharacters
 		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(),cha => cha.rankInCombat() === self.currentRankInCombat()), ch => ch.status(Constants.characterStatusCurrentlyActing()));
 		
+		//update effect duration
+		ko.utils.arrayForEach(ko.utils.arrayFilter(self.effects(), eff => eff.rankInCombat() === self.currentRankInCombat() && eff.duration() !== -1), effect => effect.duration(effect.duration() - 1));
 		
+		var removedEffects = ko.utils.arrayFilter(self.effects(), eff => eff.duration() === 0);
+		if (removedEffects.length > 0) {
+			self.removeEffectList(removedEffects);
+		}
 		
 		self.allCharacters.valueHasMutated();
 	}
@@ -286,8 +317,14 @@ ko.utils.extend(FightModel.prototype, {
         
         if (this.addingNewEffect()) {
             //we're adding a new effect
+			var fightModel = this;
+			ko.utils.arrayForEach(this.selectedTargets(), function(target) {
+				var newEffect = new TrackableEffect(edited)
+				newEffect.character(ko.utils.arrayFirst(fightModel.allCharacters(), ch => ch.name() === target.name()));
+				fightModel.effects.push(newEffect);
+			});
 			
-            this.effects.push(new TrackableEffect(edited));
+            
         }
         else {
             //apply updates from the edited effect to the selected effect
