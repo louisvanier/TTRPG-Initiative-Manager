@@ -4,7 +4,7 @@
 	// effectTypes
     
     cons.effectTypeBeneficial = function () {
-                return 'beneficial';
+        return 'beneficial';
     }
     cons.effectTypeNeutral = function () {
         return 'neutral';
@@ -48,6 +48,16 @@ var Character = function(data) {
     self.name = ko.observable();
     self.rankInCombat = ko.observable();
     self.status = ko.observable();
+	
+	self.hasntPlayedYet = ko.computed(function() {
+		return self.status() === window.Constants.characterStatusAboutToAct()
+			|| self.status() === window.Constants.characterStatusDelaying();
+	});
+	
+	self.alreadyPlayed = ko.computed(function() {
+		return self.status() === window.Constants.characterStatusReadying()
+			|| self.status() === window.Constants.characterStatusAlreadyActed();
+	});
 
     self.update(data);
 };
@@ -113,16 +123,13 @@ var FightModel = function(fightData) {
 	self.inCombatCharacters = self.allCharacters.filter( ch => ch.status() !== window.Constants.characterStatusOutOfCombat());
 	
 	//return characters that are in statuses where they've already spend their turn
-	self.alreadyPlayedCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusAboutToAct() 
-															|| ch.status() === window.Constants.characterStatusReadying()
-															|| ch.status() === window.Constants.characterStatusAlreadyActed());
+	self.alreadyPlayedCharacters = self.allCharacters.filterByProperty("alreadyPlayed", true);
 															
 	//return  characters that are in statuses where they haven't already acted this turn
-	self.haventPlayedYetCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusAboutToAct
-															|| ch.status() === window.Constants.characterStatusDelaying());
+	self.haventPlayedYetCharacters = self.allCharacters.filterByProperty("hasntPlayedYet", true);
 	
 	//return all the characters that have the status saying they are currently action
-	self.currentlyActingCharacters = self.allCharacters.filter( ch => ch.status() === window.Constants.characterStatusCurrentlyActing());
+	self.currentlyActingCharacters = self.allCharacters.filterByProperty("status", window.Constants.characterStatusCurrentlyActing());
     
     //functions and observables to add/edit/cancel the edition of a new character
     self.selectedCharacter = ko.observable();
@@ -153,14 +160,14 @@ var FightModel = function(fightData) {
 	//functions to manage effects
 	self.removeEffect = function(effect) {
 		ko.utils.arrayRemoveItem(self.effects(), effect);
-		//TODO => dive deeper, why do we have to notify manually that there was a change?
+		//TODO => dive deeper, why do we have to notify manually that there was a change? problem seems to rely in characterForEditingEffects
 		self.effects.valueHasMutated();
 	}
 	
 	
 	//round management related functions
 	self.currentRound = ko.observable(fightData.currentRound);
-	self.currentRankInCombat = ko.observable(fightData.currentRankInCombat || 0);
+	self.currentRankInCombat = ko.observable(fightData.currentRankInCombat || 1);
 	
 	self.canGoToNextCharacter = ko.pureComputed(function () {
 		return self.allCharacters().length > 1;
@@ -168,13 +175,24 @@ var FightModel = function(fightData) {
 	
 	self.nextCharacter = function() {
 		//have we reached the end of all characters?
-		if (self.currentRankInCombat() === self.allCharacters().length - 1) {
-			//reset the status of all characters except the ready status
-			ko.utils.arrayForEach(self.allCharacters.filter(cha => cha.status() !== window.Constants.characterStatusReadying()), ch => ch.status(window.Constants.characterStatusAboutToAct()))
+		if (self.currentRankInCombat() === self.allCharacters().length) {
+			//reset the status of all characters except the ready status, because it can carry over from round to round
+			ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() !== window.Constants.characterStatusReadying()), ch => ch.status(window.Constants.characterStatusAboutToAct()));
 			self.currentRound(self.currentRound() + 1);
 		}
 	
-		self.currentRankInCombat(self.currentRankInCombat() === self.allCharacters().length - 1 ? 0 : self.currentRankInCombat() + 1);
+		//move the currentRank forward by 1, or reset to 0 if we have moved through all the characters
+		self.currentRankInCombat(self.currentRankInCombat() === self.allCharacters().length ? 1 : self.currentRankInCombat() + 1);
+		
+		//set everyone currentlyActing as alreadyActed
+		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() === window.Constants.characterStatusCurrentlyActing()), ch => ch.status(window.Constants.characterStatusAlreadyActed()));
+		
+		//set everyone in the currentRank as currentlyActingCharacters
+		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(),cha => cha.rankInCombat() === self.currentRankInCombat()), ch => ch.status(window.Constants.characterStatusCurrentlyActing()));
+		
+		
+		
+		self.allCharacters.valueHasMutated();
 	}
 
 };

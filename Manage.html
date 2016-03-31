@@ -24,13 +24,13 @@
   <button type="button" class="btn btn-primary" data-bind="click: addEffect, clickBubble: false">Add an effect</button>
 </div>
 
-<div style="display: table; clear:both;">
+<div style="clear:both;">
 <ul data-bind="foreach: alreadyPlayedCharacters" class="listOfCharacters">
     <li>
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
+                    <span data-bind="text: name() + ' -> already acted', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
                     <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
@@ -46,7 +46,7 @@
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
+                    <span data-bind="text: name() + ' -> currently acting', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
                     <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
@@ -62,7 +62,7 @@
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
-                    <span data-bind="text: name, click: $parent.selectCharacter"></span>
+                    <span data-bind="text: name() + ' -> havent played yet', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
                     <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
@@ -152,7 +152,7 @@
   ko.options.deferUpdates = true;
   var viewModel = new FightModel({
     currentRound: 1,
-    characters: [{name: 'Alpha', rankInCombat: 1}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
+    characters: [{name: 'Alpha', rankInCombat: 1, status: window.Constants.characterStatusCurrentlyActing()}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
     effects: [{name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Alpha', effectType: window.Constants.effectTypeNeutral()}]
   });
   ko.applyBindings(viewModel);
