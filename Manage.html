@@ -25,7 +25,7 @@
 </div>
 
 <div style="clear:both;">
-<ul data-bind="sortable: {data: alreadyPlayedCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+<ul data-bind="sortable: {data: alreadyPlayedCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="alreadyPlayed">
         <div>
                 <div style="float: left;">
@@ -41,7 +41,7 @@
             </div>
     </li>
 </ul>
-<ul data-bind="sortable: {data: currentlyActingCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+<ul data-bind="sortable: {data: currentlyActingCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="currentlyActing">
         <div>
                 <div style="float: left;">
@@ -57,7 +57,7 @@
             </div>
     </li>
 </ul>
-<ul data-bind="sortable: {data: haventPlayedYetCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+<ul data-bind="sortable: {data: haventPlayedYetCharacters, afterMove: afterSortHandler, beforeMove: beforeSortHandler}" class="listOfCharacters">
     <li class="hasntPlayed">
         <div>
                 <div style="float: left;">
@@ -119,11 +119,25 @@
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="effectDuration">Price</label>
+        <label class="control-label" for="effectDuration">Duration</label>
 		<div class="controls">
             <input type="number" step="1" id="effectDuration" data-bind="value: duration" />
+			<br/>
+			<span class="additionnalExplanations">A duration of -1 means this effect's duration should not be tracked</span>
         </div>
-		<span class="additionnalExplanations">A duration of -1 means this effect's duration should not be tracked</span>
+		
+		<!-- <label class="control-label" for="effectCreator">Creator of the effect</label>
+		<div class="controls>
+			<select id="effectCreator" data-bind="options: $parent.allCharacters, optionsText: 'name', optionsValue: 'rankInCombat', value: rankInCombat"></select>
+		</div> -->
+		<div class="effectTargets" data-bind="$root.addingNewEffect">
+			<p>Choose Targets</p>
+			<ul data-bind="foreach: $root.allCharacters">
+				<li data-bind="toggle: $root.selectedTargets, click: function() { $($element).toggleClass('selectedTarget');}">
+					<span data-bind="text: name"></span>
+				</li>
+			</ul>
+		</div>
       </div>
       <div class="control-group">
         <div class="controls">
@@ -155,6 +169,13 @@
     currentRound: 1,
     characters: [{name: 'Alpha', rankInCombat: 1, status: window.Constants.characterStatusCurrentlyActing()}, {name: 'Beta', rankInCombat: 2}, {name: 'Gamma', rankInCombat: 3}],
     effects: [{name: 'Super-jetstream', description: 'the power of the wind', duration: 2, rankInCombat: 3, characterName: 'Alpha', effectType: window.Constants.effectTypeNeutral()}]
+  }, {
+	sortCanceled: function(eventData) { 
+		console.log(eventData.character.name());
+	},
+	newRoundBeginning: function(eventData) {
+		console.log('round ' + eventData.round + ' has just begun');
+	}
   });
   ko.applyBindings(viewModel);
 </script>

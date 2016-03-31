@@ -113,9 +113,15 @@ TrackableEffect.prototype.update = function(data) {
     this.rankInCombat(data.rankInCombat || 0);
 }
 
-var FightModel = function(fightData) {
+var FightModel = function(fightData, eventCallbacks) {
     var self = this;
-    
+	
+	//helper function to fire subscribed events
+    var fireEventCallback = function(eventCallbackName, callbackData) {
+		if (eventCallbacks && eventCallbacks[eventCallbackName] && typeof eventCallbacks[eventCallbackName] === 'function') {
+			eventCallbacks[eventCallbackName].call(self, callbackData);
+		}
+	}
 
     //Load characters
     self.allCharacters = ko.observableArray(ko.utils.arrayMap(fightData.characters, function(data) {
@@ -160,6 +166,7 @@ var FightModel = function(fightData) {
     self.addEffect = self.addEffect.bind(this);
     self.addingNewEffect = ko.observable(false);
 	self.characterForEditingEffects = self.effects.filter(effect => effect.character() === self.selectedCharacter());
+	self.selectedTargets = ko.observableArray([]);
 	
 	//functions to manage effects
 	self.removeEffect = function(effect) {
@@ -183,6 +190,7 @@ var FightModel = function(fightData) {
 			//reset the status of all characters except the ready status, because it can carry over from round to round
 			ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() !== Constants.characterStatusReadying()), ch => ch.status(Constants.characterStatusAboutToAct()));
 			self.currentRound(self.currentRound() + 1);
+			fireEventCallback('newRoundBeginning', {round: self.currentRound()});
 		}
 	
 		//move the currentRank forward by 1, or reset to 0 if we have moved through all the characters
@@ -200,15 +208,30 @@ var FightModel = function(fightData) {
 	}
 	
 	self.afterSortHandler = function(args) {
+		for (var index = 0; index < self.allCharacters().length; index++) {
+                    self.allCharacters()[index].rankInCombat(index);
+        }
+		
+		//set the status of the character we have delayed
+		args.item.status(Constants.characterStatusDelaying());
+		
+		//We need to move forward to the next character unless there were other characters at the same rank
+		if (ko.utils.arrayFilter(self.allCharacters(), ch => ch.status() === Constants.characterStatusCurrentlyActing()).length === 0) {
+			self.nextCharacter();
+		}
+		
+		self.allCharacters.valueHasMutated();
+	}
+	self.beforeSortHandler = function(args) {
 		//early bail if already delayed
-		if (args.item.status() === Constants.characterStatusDelaying()) {
-			console.log('early bail out of sort handler');
+		if (args.item.status() !== Constants.characterStatusCurrentlyActing()) {
+			fireEventCallback('sortCanceled', {character: args.item});
 			args.cancelDrop = true;
 			return false;
 		}
-		
-		args.item.status(Constants.characterStatusDelaying());
 	}
+	
+	
 
 };
 
@@ -263,12 +286,15 @@ ko.utils.extend(FightModel.prototype, {
         
         if (this.addingNewEffect()) {
             //we're adding a new effect
+			
             this.effects.push(new TrackableEffect(edited));
         }
         else {
             //apply updates from the edited effect to the selected effect
             selected.update(edited);
         }
+		
+		this.selectedTargets([]);
         
         //clear selected item
         this.selectedEffect(null);
