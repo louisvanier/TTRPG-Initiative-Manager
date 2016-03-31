@@ -50,13 +50,17 @@ var Character = function(data) {
     self.status = ko.observable();
 	
 	self.hasntPlayedYet = ko.computed(function() {
-		return self.status() === window.Constants.characterStatusAboutToAct()
-			|| self.status() === window.Constants.characterStatusDelaying();
+		return self.status() === Constants.characterStatusAboutToAct()
+			|| self.status() === Constants.characterStatusDelaying();
 	});
 	
 	self.alreadyPlayed = ko.computed(function() {
-		return self.status() === window.Constants.characterStatusReadying()
-			|| self.status() === window.Constants.characterStatusAlreadyActed();
+		return self.status() === Constants.characterStatusReadying()
+			|| self.status() === Constants.characterStatusAlreadyActed();
+	});
+	
+	self.hasDelayedCurrentRound = ko.computed(function() {
+		return self.status() === Constants.characterStatusDelaying();
 	});
 
     self.update(data);
@@ -71,7 +75,7 @@ Character.prototype.update = function(data) {
     this.rankInCombat(data.rankInCombat);
 
     //a flag to indicate the character is out of combat. 
-    this.status(data.status || window.Constants.characterStatusAboutToAct());
+    this.status(data.status || Constants.characterStatusAboutToAct());
 };
 
 //Model for a trackable effect in a fight (buffs, debuffs, conditions)
@@ -104,8 +108,8 @@ var TrackableEffect = function(data) {
 TrackableEffect.prototype.update = function(data) {
     this.name(data.name || "New Trackable Effect");
     this.description(data.description || "description missing");
-    this.duration(data.duration || window.Constants.effectDurationForever());
-    this.effectType(data.effectType || window.Constants.effectTypeNeutral());
+    this.duration(data.duration || Constants.effectDurationForever());
+    this.effectType(data.effectType || Constants.effectTypeNeutral());
     this.rankInCombat(data.rankInCombat || 0);
 }
 
@@ -120,7 +124,7 @@ var FightModel = function(fightData) {
     }));
 	
 	//return only characters that are not knocked out
-	self.inCombatCharacters = self.allCharacters.filter( ch => ch.status() !== window.Constants.characterStatusOutOfCombat());
+	self.inCombatCharacters = self.allCharacters.filter( ch => ch.status() !== Constants.characterStatusOutOfCombat());
 	
 	//return characters that are in statuses where they've already spend their turn
 	self.alreadyPlayedCharacters = self.allCharacters.filterByProperty("alreadyPlayed", true);
@@ -129,7 +133,7 @@ var FightModel = function(fightData) {
 	self.haventPlayedYetCharacters = self.allCharacters.filterByProperty("hasntPlayedYet", true);
 	
 	//return all the characters that have the status saying they are currently action
-	self.currentlyActingCharacters = self.allCharacters.filterByProperty("status", window.Constants.characterStatusCurrentlyActing());
+	self.currentlyActingCharacters = self.allCharacters.filterByProperty("status", Constants.characterStatusCurrentlyActing());
     
     //functions and observables to add/edit/cancel the edition of a new character
     self.selectedCharacter = ko.observable();
@@ -177,7 +181,7 @@ var FightModel = function(fightData) {
 		//have we reached the end of all characters?
 		if (self.currentRankInCombat() === self.allCharacters().length) {
 			//reset the status of all characters except the ready status, because it can carry over from round to round
-			ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() !== window.Constants.characterStatusReadying()), ch => ch.status(window.Constants.characterStatusAboutToAct()));
+			ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() !== Constants.characterStatusReadying()), ch => ch.status(Constants.characterStatusAboutToAct()));
 			self.currentRound(self.currentRound() + 1);
 		}
 	
@@ -185,14 +189,25 @@ var FightModel = function(fightData) {
 		self.currentRankInCombat(self.currentRankInCombat() === self.allCharacters().length ? 1 : self.currentRankInCombat() + 1);
 		
 		//set everyone currentlyActing as alreadyActed
-		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() === window.Constants.characterStatusCurrentlyActing()), ch => ch.status(window.Constants.characterStatusAlreadyActed()));
+		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() === Constants.characterStatusCurrentlyActing()), ch => ch.status(Constants.characterStatusAlreadyActed()));
 		
 		//set everyone in the currentRank as currentlyActingCharacters
-		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(),cha => cha.rankInCombat() === self.currentRankInCombat()), ch => ch.status(window.Constants.characterStatusCurrentlyActing()));
+		ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(),cha => cha.rankInCombat() === self.currentRankInCombat()), ch => ch.status(Constants.characterStatusCurrentlyActing()));
 		
 		
 		
 		self.allCharacters.valueHasMutated();
+	}
+	
+	self.afterSortHandler = function(args) {
+		//early bail if already delayed
+		if (args.item.status() === Constants.characterStatusDelaying()) {
+			console.log('early bail out of sort handler');
+			args.cancelDrop = true;
+			return false;
+		}
+		
+		args.item.status(Constants.characterStatusDelaying());
 	}
 
 };

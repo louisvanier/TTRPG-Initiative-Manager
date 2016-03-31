@@ -57,7 +57,7 @@ ul li{
 }
 
 
-.listOfCharacters .alreadyActed {
+.listOfCharacters .alreadyPlayed {
     color: red;
     font-size: 0.8em;
     border-left: 1px solid #ccc;
@@ -73,14 +73,15 @@ ul li{
     padding: 1em;
 }
 
-.listOfCharacters .aboutToAct {
+.listOfCharacters .hasntPlayed {
     color: green;
     border-left: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
 }
 
 .listOfCharacters .currentlyActing {
-    border-right: none; position: relative; right: -1px; background-color: #fff; z-index: 1; border-left: 1px solid black; border-top: 1px solid black; border-bottom: 1px solid black;
+    /*border-right: none; position: relative; right: -1px; background-color: #fff; z-index: 1; border-left: 1px solid black; border-top: 1px solid black; border-bottom: 1px solid black;*/
+	background-color: #fff; z-index: 1; border-left: 1px solid black; border-top: 1px solid black; border-bottom: 1px solid black;
 }
 
 .ui-selected {

@@ -25,48 +25,48 @@
 </div>
 
 <div style="clear:both;">
-<ul data-bind="foreach: alreadyPlayedCharacters" class="listOfCharacters">
-    <li>
+<ul data-bind="sortable: {data: alreadyPlayedCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+    <li class="alreadyPlayed">
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
                     <span data-bind="text: name() + ' -> already acted', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
-                    <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
                     <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
                 </div>
                 <div style="clear: both;"></div>
             </div>
     </li>
 </ul>
-<ul data-bind="foreach: currentlyActingCharacters" class="listOfCharacters">
-    <li>
+<ul data-bind="sortable: {data: currentlyActingCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+    <li class="currentlyActing">
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
                     <span data-bind="text: name() + ' -> currently acting', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
-                    <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> --> -->
                     <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
                 </div>
                 <div style="clear: both;"></div>
             </div>
     </li>
 </ul>
-<ul data-bind="foreach: haventPlayedYetCharacters" class="listOfCharacters">
-    <li>
+<ul data-bind="sortable: {data: haventPlayedYetCharacters, afterMove: afterSortHandler}" class="listOfCharacters">
+    <li class="hasntPlayed">
         <div>
                 <div style="float: left;">
                     <!-- <button class="btn btn-danger" data-bind="visible: !$root.IsCurrentCharacter(RankInCombatOrder) && !$data.OutOfCombat(), click: function () {$data.TakeOut(); }, attr: {title: 'remove ' + Name() + ' from combat'}">X</button> -->
                     <span data-bind="text: name() + ' -> havent played yet', click: $parent.selectCharacter"></span>
                 </div>
                 <div style="float: right;">
-                    <!-- <i title="already delayed in current round" data-bind="visible: HasDelayedCurrentRound" class="fa fa-clock-o"></i>
-                    <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> -->
+                    <i title="already delayed in current round" data-bind="visible: hasDelayedCurrentRound" class="fa fa-clock-o"></i>
+                    <!-- <i title="readied an action" data-bind="visible: HasReadiedCurrentRound" class="fa fa-exclamation-triangle"></i> --> -->
                     <!-- <i title="out of combat" data-bind="visible: status !== window.Constants.characterStatusOutOfCombat()" class="fa fa-times"></i> -->
                 </div>
                 <div style="clear: both;"></div>
@@ -74,6 +74,7 @@
     </li>
 </ul>
 </div>
+<div style="clear: both;"></div>
 
 <hr/>
 

@@ -240,7 +240,13 @@
                             //do the actual move
                             if (targetIndex >= 0) {
                                 if (sourceParent) {
-                                    sourceParent.splice(sourceIndex, 1);
+									
+									//with filtered observable array source parent needs to be unwrapped first
+									if (typeof sourceParent === 'function') {
+										sourceParent().splice(sourceIndex, 1);
+									} else {
+										sourceParent.splice(sourceIndex, 1);
+									}
 
                                     //if using deferred updates plugin, force updates
                                     if (ko.processAllDeferredBindingUpdates) {
@@ -248,7 +254,11 @@
                                     }
                                 }
 
-                                targetParent.splice(targetIndex, 0, item);
+								if (typeof sourceParent === 'function') {
+									targetParent().splice(targetIndex, 0, item);
+								} else {
+									targetParent.splice(targetIndex, 0, item);
+								}
                             }
 
                             //rendering is handled by manipulating the observableArray; ignore dropped element
