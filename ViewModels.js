@@ -181,9 +181,10 @@ var FightModel = function(fightData, eventCallbacks) {
 		self.effects.valueHasMutated();
 	}
 	self.removeEffectList = function(effects) {
-		//TODO => raise an effectRemoved event at once, concatenating all the effects properly per effect
+		//this will hold one key per effect name with the value being all characters on which the effect was removed
 		var effectsRemoved = {}
 	
+		//remove all effects, and populated the effectsRemoved map
 		ko.utils.arrayForEach(effects, function (effect) { 
 			if (!effectsRemoved[effect.name()]) {
 				effectsRemoved[effect.name()] = effect.characterName();
@@ -193,6 +194,7 @@ var FightModel = function(fightData, eventCallbacks) {
 			ko.utils.arrayRemoveItem(self.effects(), effect)
 		});
 		
+		//for every different effect in the map, fire an event effectRemoved
 		ko.utils.objectForEach(effectsRemoved, function(key, value) {
 			fireEventCallback('effectRemoved', {round: self.currentRound(), effectName: key, effectTarget: value});
 		});
@@ -210,7 +212,7 @@ var FightModel = function(fightData, eventCallbacks) {
 	})
 	
 	self.nextCharacter = function() {
-		//have we reached the end of all characters?
+		//Check if its a new round
 		if (self.currentRankInCombat() === self.allCharacters().length) {
 			//reset the status of all characters except the ready status, because it can carry over from round to round
 			ko.utils.arrayForEach(ko.utils.arrayFilter(self.allCharacters(), cha => cha.status() !== Constants.characterStatusReadying()), ch => ch.status(Constants.characterStatusAboutToAct()));
