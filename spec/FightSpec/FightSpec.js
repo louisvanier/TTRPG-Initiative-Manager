@@ -1,5 +1,5 @@
 describe("FightModel", function() {
-  var FightModel = require('../../ViewModel/FightModel');
+  var FightModel = require('../ViewModel.js');
   var Character = require('../../ViewModel/Character');
   var TrackableEffect = require('../../ViewModel/TrackableEffect');
   var ko = require('../../knockout/ko');

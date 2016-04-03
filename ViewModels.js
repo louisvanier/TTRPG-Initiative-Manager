@@ -354,10 +354,3 @@ ko.utils.extend(FightModel.prototype, {
         this.effectForEditing(newEffect);
     }
 });
-
-module.exports = {
-	FightModel: FightModel,
-	Character: Character,
-	TrackableEffect: TrackableEffect
-	
-};
