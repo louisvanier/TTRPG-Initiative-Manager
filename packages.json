@@ -1,0 +1,5 @@
+"devDependencies": {
+  "yo": ">= 0.0.1"
+  "bower": ">= 0.0.1"
+  "jasmine": ">= 0.0.1"
+}
