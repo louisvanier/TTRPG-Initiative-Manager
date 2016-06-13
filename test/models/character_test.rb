@@ -1,7 +1,9 @@
 require 'test_helper'
 
 class CharacterTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "only name is required" do
+    character = Character.new
+    assert character.invalid?
+    assert character.errors[:name].any?
+  end
 end

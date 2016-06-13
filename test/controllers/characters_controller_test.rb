@@ -17,7 +17,7 @@ class CharactersControllerTest < ActionDispatch::IntegrationTest
 
   test "should create character" do
     assert_difference('Character.count') do
-      post characters_url, params: { character: { description: @character.description, name: @character.name } }
+      post characters_url, params: { character: { description: 'test data', name: 'Johnny test' } }
     end
 
     assert_redirected_to character_path(Character.last)

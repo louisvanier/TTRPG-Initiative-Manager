@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyString
+  name: Dart Vader
+  description: Dark Lord of the Sith
 
 two:
-  name: MyString
-  description: MyString
+  name: Master Yoda
+  description: Tiniest jedi
