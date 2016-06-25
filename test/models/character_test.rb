@@ -6,4 +6,13 @@ class CharacterTest < ActiveSupport::TestCase
     assert character.invalid?
     assert character.errors[:name].any?
   end
+
+  test "name is unique" do
+  	character = Character.new
+  	character.name = characters(:darth_vader).name
+  	character.save
+  	assert character.invalid?
+  	assert character.errors[:name].any?
+
+  end
 end

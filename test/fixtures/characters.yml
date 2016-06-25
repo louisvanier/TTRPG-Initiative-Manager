@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: Dart Vader
+darth_vader:
+  name: Darth Vader
   description: Dark Lord of the Sith
 
-two:
+master_yoda:
   name: Master Yoda
   description: Tiniest jedi
