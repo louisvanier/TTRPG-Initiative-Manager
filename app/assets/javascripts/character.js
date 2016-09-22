@@ -1,3 +1,4 @@
+import { ko } from  'knockout'
 
 let characterModel = (data) => {
   let self = this;
@@ -8,3 +9,5 @@ let characterModel = (data) => {
 characterModel.prototype.update = (data) => {
   this.name(data.name || "New Character");
 }
+
+exports.character = { characterModel }

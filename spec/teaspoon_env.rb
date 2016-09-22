@@ -33,12 +33,12 @@ Teaspoon.configure do |config|
     # directives.
     # Note: If no version is specified, the latest is assumed.
     #
-    # Versions: 1.3.1, 2.0.3, 2.1.3, 2.2.0, 2.2.1, 2.3.4
-    suite.use_framework :jasmine, "2.3.4"
+    # Versions: 1.3.1, 2.0.3, 2.1.3, 2.2.0, 2.2.1, 2.3.4, 2.4.1
+    suite.use_framework :jasmine, "2.4.1"
 
     # Specify a file matcher as a regular expression and all matching files will be loaded when the suite is run. These
     # files need to be within an asset path. You can add asset paths using the `config.asset_paths`.
-    suite.matcher = "{spec/javascripts,app/assets}/**/*_spec.{js,js.coffee,coffee}"
+    suite.matcher = "{spec/javascripts,app/assets}/**/*_spec.{js,js.coffee,coffee,es6}"
 
     # Load additional JS files, but requiring them in your spec helper is the preferred way to do this.
     #suite.javascripts = []
@@ -94,18 +94,18 @@ Teaspoon.configure do |config|
   # Specify which headless driver to use. Supports PhantomJS, Selenium Webdriver and BrowserStack Webdriver.
   #
   # Available: :phantomjs, :selenium, :browserstack, :capybara_webkit
-  # PhantomJS: https://github.com/modeset/teaspoon/wiki/Using-PhantomJS
-  # Selenium Webdriver: https://github.com/modeset/teaspoon/wiki/Using-Selenium-WebDriver
-  # BrowserStack Webdriver: https://github.com/modeset/teaspoon/wiki/Using-BrowserStack-WebDriver
-  # Capybara Webkit: https://github.com/modeset/teaspoon/wiki/Using-Capybara-Webkit
+  # PhantomJS: https://github.com/jejacks0n/teaspoon/wiki/Using-PhantomJS
+  # Selenium Webdriver: https://github.com/jejacks0n/teaspoon/wiki/Using-Selenium-WebDriver
+  # BrowserStack Webdriver: https://github.com/jejacks0n/teaspoon/wiki/Using-BrowserStack-WebDriver
+  # Capybara Webkit: https://github.com/jejacks0n/teaspoon/wiki/Using-Capybara-Webkit
   #config.driver = :phantomjs
 
   # Specify additional options for the driver.
   #
-  # PhantomJS: https://github.com/modeset/teaspoon/wiki/Using-PhantomJS
-  # Selenium Webdriver: https://github.com/modeset/teaspoon/wiki/Using-Selenium-WebDriver
-  # BrowserStack Webdriver: https://github.com/modeset/teaspoon/wiki/Using-BrowserStack-WebDriver
-  # Capybara Webkit: https://github.com/modeset/teaspoon/wiki/Using-Capybara-Webkit
+  # PhantomJS: https://github.com/jejacks0n/teaspoon/wiki/Using-PhantomJS
+  # Selenium Webdriver: https://github.com/jejacks0n/teaspoon/wiki/Using-Selenium-WebDriver
+  # BrowserStack Webdriver: https://github.com/jejacks0n/teaspoon/wiki/Using-BrowserStack-WebDriver
+  # Capybara Webkit: https://github.com/jejacks0n/teaspoon/wiki/Using-Capybara-Webkit
   #config.driver_options = nil
 
   # Specify the timeout for the driver. Specs are expected to complete within this time frame or the run will be

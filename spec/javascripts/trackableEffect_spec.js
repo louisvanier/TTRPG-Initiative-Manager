@@ -1,30 +1,23 @@
-import { effectTypeBeneficial,
-  effectTypeNeutral,
-  effectTypeHarmful,
-  parseEffectType,
-  trackableEffectModel } 
-  from 'trackableEffect'
+let TrackableEffectModel = require('../../app/assets/javascripts/trackableEffect.js').trackableEffect;
 
-describe("parseEffectType", () => {
+
+
+describe("trackableEffectModel", () => {
+  var trackableEffect = null;
   beforeEach(() => {
-
+    trackableEffect = new TrackableEffectModel({});
   });
 
-  it("should parse NeUtRaL case insensitive", () => {
-    expect(parseEffectType("NeUtRaL").toEqual(effectTypeNeutral))
-  });
-  it("should parse HaRmFuL case insensitive", () => {
-    expect(parseEffectType("HaRmFuL").toEqual(effectTypeHarmful))
-  });
-  it("should default to beneficial on giberrish", () => {
-    expect(parseEffectType("Giberrish").toEqual(effectTypeBeneficial))
-  });
-});
-
-describe("trackableEffect model", () => {
-  let trackableEffect = null;
-  beforeEach(() => {
-    trackableEffect = trackableEffectModel({});
+  describe("parseEffectType", () => {
+    it("should parse NeUtRaL case insensitive", () => {
+      expect(TrackableEffectModel.parseEffectType("NeUtRaL")).toEqual("NEUTRAL");
+    });
+    it("should parse HaRmFuL case insensitive", () => {
+      expect(TrackableEffectModel.parseEffectType("HaRmFuL")).toEqual("HARMFUL");
+    });
+    it("should default to beneficial on anything but neutral and harmful", () => {
+      expect(TrackableEffectModel.parseEffectType("anything but neutral and harmful")).toEqual("BENEFICIAL");
+    });
   });
 
   describe("update model data", () => {
@@ -44,7 +37,7 @@ describe("trackableEffect model", () => {
       expect(trackableEffect.title()).toEqual('Bless');
       expect(trackableEffect.description()).toEqual('Buff +1 morale bonus on attack rolls and saves vs fear effects');
       expect(trackableEffect.duration()).toEqual(3);
-      expect(trackableEffect.effectType()).toEqual(effectTypeNeutral);
+      expect(trackableEffect.effectType()).toEqual(TrackableEffectModel.effectTypeNeutral());
     });
     it("should default title to 'New effect'", () => {
       let updateData = {
@@ -64,7 +57,7 @@ describe("trackableEffect model", () => {
       };
 
       trackableEffect.update(updateData);
-      expect(trackableEffect.duration()).toEqual('');
+      expect(trackableEffect.description()).toEqual('');
     });
     it("should default duration to -1", () => {
       let updateData = {
@@ -84,7 +77,7 @@ describe("trackableEffect model", () => {
       };
 
       trackableEffect.update(updateData);
-      expect(trackableEffect.effectType()).toEqual(effectTypeBeneficial);
+      expect(trackableEffect.effectType()).toEqual(TrackableEffectModel.effectTypeBeneficial());
     });
   })
 });

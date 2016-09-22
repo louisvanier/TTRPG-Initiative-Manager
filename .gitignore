@@ -26,3 +26,6 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
+
+#Ignore node_modules
+/node_modules/*
