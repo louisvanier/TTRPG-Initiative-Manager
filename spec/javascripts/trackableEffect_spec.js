@@ -3,7 +3,7 @@ let TrackableEffectModel = require('../../app/assets/javascripts/trackableEffect
 
 
 describe("trackableEffectModel", () => {
-  var trackableEffect = null;
+  let trackableEffect = null;
   beforeEach(() => {
     trackableEffect = new TrackableEffectModel({});
   });

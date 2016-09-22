@@ -4,7 +4,7 @@ let ko = require('knockout')
 
 let TrackableEffectModel = class {
 
-  constructor(data) {
+  constructor() {
     this.title = ko.observable();
     this.description = ko.observable();
     this.duration = ko.observable();
