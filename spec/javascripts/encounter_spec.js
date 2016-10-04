@@ -208,4 +208,32 @@ describe("EncounterModel", () => {
       expect(() => { encounter.addCharacter(newCharacter) }).toThrow();
     });
   })
+
+  describe("addEffect", () => {
+    let newEffect = null;
+    beforeEach(() => {
+      encounter.update(modelData);
+      newEffect = new TrackableEffectModel();
+      newEffect.update({
+        title: 'Unicorn kisses',
+        description: "pink stuff",
+        duration: 4,
+        effectType: 'Beneficial'
+      });
+    });
+
+    it("should add the Effect", () => {
+      let effectCount = encounter.effects().length;
+      encounter.addEffect(newEffect);
+      expect(encounter.effects().length).toEqual(effectCount + 1);
+    });
+    it("should raise if an effect with the same name is already present", () => {
+      newEffect.title(encounter.effects()[0].title());
+      expect(() => { encounter.addEffect(newEffect) }).toThrow();
+    });
+    it("should add all the targets to the effect", () => {
+      encounter.addEffect(newEffect, encounter.characters());
+      expect(encounter.targetsAndEffects.get(newEffect).size).toEqual(encounter.characters().length);
+    });
+  })
 });

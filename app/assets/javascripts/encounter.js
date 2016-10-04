@@ -95,11 +95,26 @@ let EncounterModel = class {
   addCharacter(character) {
     if (this.findCharacter(character.name())) {
         throw new Error("CharacterNameAlreadyTaken");
+        return;
     }
 
     this.characters.push(character);
   }
-  //TODO => add addEffect
+
+  addEffect(effect, targets) {
+    if (this.findEffect(effect.title())) {
+        throw new Error("EffectNameAlreadyTaken");
+        return;
+    }
+
+    this.effects.push(effect);
+    if (targets) {
+        for (let target of targets) {
+            this.addTargetToEffect(effect, target);
+        }
+    }
+  }
+
 }
 
 exports.encounter = EncounterModel
