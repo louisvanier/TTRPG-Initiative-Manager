@@ -12,7 +12,8 @@
     "browserify": "^13.1.0",
     "browserify-incremental": "^3.1.1",
     "jquery": "^3.1.0",
-    "knockout": "^3.4.0"
+    "knockout": "^3.4.0",
+    "weak-map": "^1.0.5"
   },
   "devDependencies": {},
   "scripts": {
