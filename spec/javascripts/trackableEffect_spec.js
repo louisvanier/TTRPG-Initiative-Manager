@@ -40,7 +40,8 @@ describe("trackableEffectModel", () => {
         title: 'Bless',
         description: 'Buff +1 morale bonus on attack rolls and saves vs fear effects',
         duration: 3,
-        effectType: 'Neutral'
+        effectType: 'Neutral',
+        rankInCombat: 2
       };
 
       trackableEffect.update(updateData);
@@ -48,6 +49,7 @@ describe("trackableEffectModel", () => {
       expect(trackableEffect.description()).toEqual('Buff +1 morale bonus on attack rolls and saves vs fear effects');
       expect(trackableEffect.duration()).toEqual(3);
       expect(trackableEffect.effectType()).toEqual(TrackableEffectModel.effectTypeNeutral());
+      expect(trackableEffect.rankInCombat()).toEqual(2);
     });
     it("should default title to 'New effect'", () => {
       let updateData = {
@@ -88,6 +90,16 @@ describe("trackableEffectModel", () => {
 
       trackableEffect.update(updateData);
       expect(trackableEffect.effectType()).toEqual(TrackableEffectModel.effectTypeBeneficial());
+    });
+    it("should default rankInCombat to 1", () => {
+      let updateData = {
+        description: 'description but I forgot a title',
+        duration: 3,
+        effectType: 'Neutral'
+      };
+
+      trackableEffect.update(updateData);
+      expect(trackableEffect.rankInCombat()).toEqual(1);
     });
   })
 });

@@ -26,6 +26,7 @@ describe("EncounterModel", () => {
           description: "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn",
           duration: 4,
           effectType: 'Beneficial',
+          rankInCombat: 2,
           targets: ['Timmay']
         }]
       };
@@ -145,7 +146,7 @@ describe("EncounterModel", () => {
       encounter.addTargetToEffect(newEffect, timmay);
       expect(encounter.targetsAndEffects.set.calls.count()).toEqual(1);
     });
-  })
+  });
 
   describe("removeTargetFromEffect", () => {
     let jimmay = null;
@@ -157,6 +158,7 @@ describe("EncounterModel", () => {
       description: 'add target to effect',
       duration: 3,
       effectType: "HARMFUL",
+      rankInCombat: 2,
       targets: ['Jimmay']
     });
     beforeEach(() => {
@@ -207,7 +209,7 @@ describe("EncounterModel", () => {
       newCharacter.name(encounter.characters()[0].name());
       expect(() => { encounter.addCharacter(newCharacter) }).toThrow();
     });
-  })
+  });
 
   describe("addEffect", () => {
     let newEffect = null;
@@ -218,7 +220,8 @@ describe("EncounterModel", () => {
         title: 'Unicorn kisses',
         description: "pink stuff",
         duration: 4,
-        effectType: 'Beneficial'
+        effectType: 'Beneficial',
+        rankInCombat: 2
       });
     });
 
@@ -235,5 +238,45 @@ describe("EncounterModel", () => {
       encounter.addEffect(newEffect, encounter.characters());
       expect(encounter.targetsAndEffects.get(newEffect).size).toEqual(encounter.characters().length);
     });
-  })
+  });
+
+  describe("next", () => {
+    beforeEach(() => {
+      modelData.rankInCurrentRound = 1;
+      modelData.characters[0].status = "CURRENTLY_ACTING";
+      modelData.characters[1].status = "ABOUT_TO_ACT";
+      modelData.characters.push({
+        name: 'Henry',
+        rankInCombat: 3,
+        status: "ABOUT_TO_ACT"
+      });
+      modelData.characters.push({
+        name: 'Tommy',
+        rankInCombat: 2,
+        status: "OUT_OF_COMBAT"
+      });
+      encounter.update(modelData);
+    });
+
+    it("should properly change the status of acting characters and nextrank characters", () => {
+      encounter.next();
+      expect(encounter.characters()[0].status()).toEqual("ALREADY_ACTED");
+      expect(encounter.characters()[1].status()).toEqual("CURRENTLY_ACTING");
+      expect(encounter.characters()[2].status()).toEqual("ABOUT_TO_ACT");
+      expect(encounter.characters()[3].status()).toEqual("OUT_OF_COMBAT");
+    });
+    it("should increment rankInCurrentRound by 1 if its not the last rank already", () => {
+      encounter.next();
+      expect(encounter.rankInCurrentRound()).toEqual(2);
+    });
+    it("should reset rankInCurrentRound to 1 if its the last rank", () => {
+      encounter.rankInCurrentRound(3);
+      encounter.next();
+      expect(encounter.rankInCurrentRound()).toEqual(1);
+    });
+    it("should decrement effect's duration for the new rank", () => {
+      encounter.next();
+      expect(encounter.effects()[0].duration()).toEqual(3);
+    });
+  });
 });

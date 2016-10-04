@@ -115,6 +115,41 @@ let EncounterModel = class {
     }
   }
 
+  next() {
+    let actingCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
+        return ch.status() === CharacterModel.characterStatusCurrentlyActing();
+    });
+    for (var character of actingCharacters) {
+        character.status(CharacterModel.characterStatusAlreadyActed());
+    }
+
+    let newRankInCurrentRound = this.rankInCurrentRound() + 1;
+    let maxRank = Math.max.apply(null, ko.utils.arrayMap(this.characters(), (ch) => { return ch.rankInCombat(); }));
+    if (newRankInCurrentRound > maxRank) {
+        newRankInCurrentRound = 1;
+        //Unit-test => publish newRound event
+    }
+    
+    this.rankInCurrentRound(newRankInCurrentRound);
+    
+    let aboutToActCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
+        return ch.rankInCombat() === newRankInCurrentRound
+            && ch.status() !== CharacterModel.characterStatusOutOfCombat();
+    });
+    for (var character of aboutToActCharacters) {
+        character.status(CharacterModel.characterStatusCurrentlyActing());
+    }
+
+    let newRankEffects = ko.utils.arrayFilter(this.effects(), (eff) => {
+        return eff.rankInCombat() === newRankInCurrentRound;
+    });
+    for (var effect of newRankEffects) {
+        effect.duration(effect.duration() - 1);
+    }
+    //decrease duration of all effects by 1. Let effects bubble up done effects by pubsub
+    //implement a skip if we dont have any players except outOfCombat
+    
+  }
 }
 
 exports.encounter = EncounterModel

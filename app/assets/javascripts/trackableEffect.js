@@ -9,6 +9,7 @@ let TrackableEffectModel = class {
     this.description = ko.observable();
     this.duration = ko.observable();
     this.effectType = ko.observable();
+    this.rankInCombat = ko.observable();
     this.creator = ko.observable();
     this.creatorName = ko.pureComputed(() => {
       return this.creator() ? this.creator().name() : 'unbound effect';
@@ -18,6 +19,9 @@ let TrackableEffectModel = class {
   update(data) {
     this.title(data.title || "New effect");
     this.description(data.description || "");
+
+    let rankInCombat = parseInt(data.rankInCombat || "");
+    this.rankInCombat(parseInt(isNaN(rankInCombat) ? 1 : rankInCombat));
 
     let duration = parseInt(data.duration || "");
     this.duration(parseInt(isNaN(duration) ? -1 : duration));
