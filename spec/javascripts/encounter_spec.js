@@ -76,8 +76,22 @@ describe("EncounterModel", () => {
     it("should return a character by its name", () => {
       expect(encounter.findCharacter('Jimmay')).toEqual(jimmay);
     });
-    it("should return undefined when it cannot find the character by its name", () => {
+    it("should return null when it cannot find the character by its name", () => {
       expect(encounter.findCharacter('Yoda great master')).toEqual(null);
+    });
+  });
+
+  describe("findEffect", () => {
+    let bloodGodEffect = null;
+    beforeEach(() => {
+      encounter.update(modelData);
+      bloodGodEffect = encounter.effects()[0];
+    });
+    it("should return a effect by its name", () => {
+      expect(encounter.findEffect('Blood for the blood god')).toEqual(bloodGodEffect);
+    });
+    it("should return null when it cannot find the effect by its name", () => {
+      expect(encounter.findEffect('Rainbows and unicorn farts')).toEqual(null);
     });
   });
 });

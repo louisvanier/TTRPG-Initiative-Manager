@@ -50,6 +50,12 @@ let EncounterModel = class {
         return character.name() === characterName;
     });
   }
+
+  findEffect(effectName) {
+    return ko.utils.arrayFirst(this.effects(), (effect) => {
+        return effect.title() === effectName;
+    });
+  }
 }
 
 exports.encounter = EncounterModel
