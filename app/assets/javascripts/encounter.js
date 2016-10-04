@@ -48,10 +48,12 @@ let EncounterModel = class {
       effect.update(effectData);
       this.effects.push(effect);
 
-      if (effectData.target) {
-        let character = this.findCharacter(effectData.target);
-        if (character !== null) {
+      if (effectData.targets) {
+        for (let targetName of effectData.targets) {
+          let character = this.findCharacter(targetName);
+          if (character !== null) {
             this.addTargetToEffect(effect, character);
+          }
         }
       }
     }, this);
@@ -89,8 +91,15 @@ let EncounterModel = class {
 
     return removed;
   }
+
+  addCharacter(character) {
+    if (this.findCharacter(character.name())) {
+        throw new Error("CharacterNameAlreadyTaken");
+    }
+
+    this.characters.push(character);
+  }
   //TODO => add addEffect
-  //TODO => add addCharacter
 }
 
 exports.encounter = EncounterModel

@@ -1,5 +1,6 @@
 let EncounterModel = require('../../app/assets/javascripts/encounter.js').encounter;
 let TrackableEffectModel = require('../../app/assets/javascripts/trackableEffect.js').trackableEffect;
+let CharacterModel = require('../../app/assets/javascripts/character.js').character;
 
 describe("EncounterModel", () => {
   let encounter = null;
@@ -25,7 +26,7 @@ describe("EncounterModel", () => {
           description: "Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn",
           duration: 4,
           effectType: 'Beneficial',
-          target: 'Timmay'
+          targets: ['Timmay']
         }]
       };
   });
@@ -107,7 +108,7 @@ describe("EncounterModel", () => {
       description: 'add target to effect',
       duration: 3,
       effectType: "HARMFUL",
-      target: 'Jimmay'
+      targets: ['Jimmay']
     });
     beforeEach(() => {
       encounter.update(modelData);
@@ -142,7 +143,7 @@ describe("EncounterModel", () => {
       description: 'add target to effect',
       duration: 3,
       effectType: "HARMFUL",
-      target: 'Jimmay'
+      targets: ['Jimmay']
     });
     beforeEach(() => {
       encounter.update(modelData);
@@ -170,4 +171,27 @@ describe("EncounterModel", () => {
       expect(ko.utils.arrayFirst(encounter.effects(), (eff) => { eff === bloodForTheBloodGod})).toEqual(null);
     });
   });
+
+  describe("addCharacter", () => {
+    let newCharacter = null;
+    beforeEach(() => {
+      encounter.update(modelData);
+      newCharacter = new CharacterModel();
+      newCharacter.update({
+        name: 'Billy',
+        rankInCombat: 3,
+        status: "ALREADY_ACTED",
+      });
+    });
+
+    it("should add the character", () => {
+      let characterCount = encounter.characters().length;
+      encounter.addCharacter(newCharacter);
+      expect(encounter.characters().length).toEqual(characterCount + 1);
+    });
+    it("should raise if a character with the same name is already present", () => {
+      newCharacter.name(encounter.characters()[0].name());
+      expect(() => { encounter.addCharacter(newCharacter) }).toThrow();
+    });
+  })
 });
