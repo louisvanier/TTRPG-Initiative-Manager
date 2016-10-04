@@ -20,6 +20,16 @@ describe("trackableEffectModel", () => {
     });
   });
 
+  describe("targetName", () => {
+    it("should return 'unbound effect' for target less effects", () => {
+      expect(trackableEffect.targetName()).toEqual('unbound effect');
+    });
+    it("should return the character's name for bound effect", () => {
+      trackableEffect.target({name: ko.observable('Kutulu')})
+      expect(trackableEffect.targetName()).toEqual('Kutulu');
+    });
+  });
+
   describe("update model data", () => {
     beforeEach(() => {
       trackableEffect.update({});
