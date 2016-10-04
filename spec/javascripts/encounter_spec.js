@@ -68,6 +68,20 @@ describe("EncounterModel", () => {
       
       expect(encounter.characters.length).toEqual(0);
     });
+    it("should support assigning multiple targets to an effect", () => {
+      modelData.effects.push({
+        title: 'Mind numbness',
+        description: "blows your mind",
+        duration: 6,
+        effectType: 'Harmful',
+        targets: ['Timmay', 'Jimmay']
+      });
+
+      encounter.update(modelData);
+      expect(encounter.effects().length).toEqual(2);
+      let mindNumbness = encounter.findEffect('Mind numbness');
+      expect(encounter.targetsAndEffects.get(mindNumbness).size).toEqual(2);
+    });
   });
 
   describe("findCharacter", () => {
