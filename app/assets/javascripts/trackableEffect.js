@@ -9,9 +9,9 @@ let TrackableEffectModel = class {
     this.description = ko.observable();
     this.duration = ko.observable();
     this.effectType = ko.observable();
-    this.target = ko.observable();
-    this.targetName = ko.pureComputed(() => {
-      return this.target() ? this.target().name() : 'unbound effect';
+    this.creator = ko.observable();
+    this.creatorName = ko.pureComputed(() => {
+      return this.creator() ? this.creator().name() : 'unbound effect';
     });
   }
 

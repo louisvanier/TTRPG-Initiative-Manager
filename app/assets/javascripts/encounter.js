@@ -51,7 +51,6 @@ let EncounterModel = class {
       if (effectData.target) {
         let character = this.findCharacter(effectData.target);
         if (character !== null) {
-            effect.target(character);
             this.addTargetToEffect(effect, character);
         }
       }
@@ -75,9 +74,21 @@ let EncounterModel = class {
         this.targetsAndEffects.set(effect, new Set());
     }
     this.targetsAndEffects.get(effect).add(target);
+
+    return this;
   }
 
-  //TODO => add removeTargetFromEffect
+  removeTargetFromEffect(effect, target) {
+    let removed = this.targetsAndEffects.get(effect).delete(target);
+    if (removed) {
+        if (this.targetsAndEffects.get(effect).size === 0) {
+            this.effects.remove(effect);
+            this.targetsAndEffects.delete(effect);
+        }
+    }
+
+    return removed;
+  }
   //TODO => add addEffect
   //TODO => add addCharacter
 }

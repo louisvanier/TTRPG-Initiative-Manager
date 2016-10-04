@@ -131,4 +131,43 @@ describe("EncounterModel", () => {
       expect(encounter.targetsAndEffects.set.calls.count()).toEqual(1);
     });
   })
+
+  describe("removeTargetFromEffect", () => {
+    let jimmay = null;
+    let timmay = null;
+    let bloodForTheBloodGod = null;
+    let newEffect = new TrackableEffectModel();
+    newEffect.update({
+      title: 'Curse of the red moon',
+      description: 'add target to effect',
+      duration: 3,
+      effectType: "HARMFUL",
+      target: 'Jimmay'
+    });
+    beforeEach(() => {
+      encounter.update(modelData);
+      jimmay = encounter.characters()[0];
+      timmay = encounter.characters()[1];
+      bloodForTheBloodGod = encounter.effects()[0];
+    });
+
+    it("should return false if the target was not targeted by the effect", () => {
+      expect(encounter.removeTargetFromEffect(bloodForTheBloodGod, jimmay)).toEqual(false);
+    });
+    it("should return true if the target was targeted by the effect", () => {
+      expect(encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay)).toEqual(true);
+    });
+    it("should not remove the effect if there are targets left", () => {
+      spyOn(encounter.effects, 'remove').and.callThrough();
+      encounter.addTargetToEffect(bloodForTheBloodGod, jimmay);
+      encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay);
+      expect(encounter.effects.remove.calls.count()).toEqual(0);
+    });
+    it("should remove the effect if there are no more targets", () => {
+      expect(encounter.targetsAndEffects.get(bloodForTheBloodGod).size).toEqual(1);
+      encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay);
+      expect(encounter.targetsAndEffects.get(bloodForTheBloodGod)).not.toBeDefined();
+      expect(ko.utils.arrayFirst(encounter.effects(), (eff) => { eff === bloodForTheBloodGod})).toEqual(null);
+    });
+  });
 });
