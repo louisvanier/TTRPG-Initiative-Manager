@@ -20,14 +20,18 @@ let CharacterModel = class {
 
   update(data) {
     this.name(data.name || "New Character");
-    let rankInCombat = parseInt(data.rankInCombat || "");
-    this.rankInCombat(parseInt(isNaN(rankInCombat) ? 1 : rankInCombat));
+    let rankInCombat = parseInt(data.rankInCombat || "1", 10);
+    if (isNaN(rankInCombat)) {
+      this.rankInCombat(1);
+    } else {
+      this.rankInCombat(rankInCombat);
+    }
 
-    let characterStatus = data.status ? CharacterModel.parseCharacterStatus(data.status) : CharacterModel.characterStatusAboutToAct();
-    this.status(characterStatus);
+    this.status(CharacterModel.parseCharacterStatus(data.status || ""));
+
   }
 
-  static characterStatusReadying() { return "READYING"; }  
+  static characterStatusReadying() { return "READYING"; }
   static characterStatusCurrentlyActing() { return "CURRENTLY_ACTING"; }
   static characterStatusDelaying() { return "DELAYING"; }
   static characterStatusAboutToAct() { return "ABOUT_TO_ACT"; }
@@ -35,32 +39,24 @@ let CharacterModel = class {
   static characterStatusAlreadyActed() { return "ALREADY_ACTED"; }
 
   static parseCharacterStatus(input) {
-    input = input.toUpperCase();
+    let upperCased = input.toUpperCase();
 
-    let parsedType = CharacterModel.characterStatusAboutToAct();
-
-    switch (input) {
+    switch (upperCased) {
       case "READYING":
-        parsedType = CharacterModel.characterStatusReadying()
-        break;
+        return CharacterModel.characterStatusReadying();
       case "CURRENTLY_ACTING":
-        parsedType = CharacterModel.characterStatusCurrentlyActing()
-        break;
+        return CharacterModel.characterStatusCurrentlyActing();
       case "DELAYING":
-        parsedType = CharacterModel.characterStatusDelaying()
-        break;
+        return CharacterModel.characterStatusDelaying();
       case "ABOUT_TO_ACT":
-        parsedType = CharacterModel.characterStatusAboutToAct()
-        break;
+        return CharacterModel.characterStatusAboutToAct();
       case "OUT_OF_COMBAT":
-        parsedType = CharacterModel.characterStatusOutOfCombat()
-        break;
+        return CharacterModel.characterStatusOutOfCombat();
       case "ALREADY_ACTED":
-        parsedType = CharacterModel.characterStatusAlreadyActed()
-        break;
+        return CharacterModel.characterStatusAlreadyActed();
+      default:
+        return CharacterModel.characterStatusAboutToAct();
     }
-
-    return parsedType;
   }
 
 }

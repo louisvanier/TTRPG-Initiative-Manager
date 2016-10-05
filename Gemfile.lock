@@ -176,7 +176,7 @@ GEM
     turbolinks-source (5.0.0.beta5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    uglifier (3.0.0)
+    uglifier (3.0.2)
       execjs (>= 0.3.0, < 3)
     web-console (3.2.0)
       activemodel (>= 4.2)

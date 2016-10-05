@@ -1,7 +1,5 @@
 let ko = require('knockout')
 
-
-
 let TrackableEffectModel = class {
 
   constructor() {
@@ -12,7 +10,11 @@ let TrackableEffectModel = class {
     this.rankInCombat = ko.observable();
     this.creator = ko.observable();
     this.creatorName = ko.pureComputed(() => {
-      return this.creator() ? this.creator().name() : 'unbound effect';
+      if (this.creator()) {
+        return this.creator().name();
+      }
+
+      return 'unbound effect';
     });
   }
 
@@ -20,34 +22,38 @@ let TrackableEffectModel = class {
     this.title(data.title || "New effect");
     this.description(data.description || "");
 
-    let rankInCombat = parseInt(data.rankInCombat || "");
-    this.rankInCombat(parseInt(isNaN(rankInCombat) ? 1 : rankInCombat));
-
-    let duration = parseInt(data.duration || "");
-    this.duration(parseInt(isNaN(duration) ? -1 : duration));
-
-    let effectType = data.effectType ? TrackableEffectModel.parseEffectType(data.effectType) : TrackableEffectModel.effectTypeBeneficial();
-    this.effectType(effectType);
-  }
-
-  static effectTypeBeneficial() { return "BENEFICIAL"}
-  static effectTypeNeutral() { return "NEUTRAL"};
-  static effectTypeHarmful() { return "HARMFUL"};
-
-  static parseEffectType(input) {
-    input = input.toUpperCase();
-    let parsedType = TrackableEffectModel.effectTypeBeneficial();
-
-    switch (input) {
-      case "NEUTRAL":
-        parsedType = TrackableEffectModel.effectTypeNeutral();
-        break;
-      case "HARMFUL":
-        parsedType = TrackableEffectModel.effectTypeHarmful();
-        break;
+    let rankInCombat = parseInt(data.rankInCombat || "1", 10);
+    if (isNaN(rankInCombat)) {
+      this.rankInCombat(1);
+    } else {
+      this.rankInCombat(rankInCombat);
     }
 
-    return parsedType;
+    let duration = parseInt(data.duration || "-1", 10);
+    if (isNaN(duration)) {
+      this.duration(1);
+    } else {
+      this.duration(duration);
+    }
+
+    data.effectType(TrackableEffectModel.parseEffectType(data.effectType || ""));
+  }
+
+  static effectTypeBeneficial() { return "BENEFICIAL" }
+  static effectTypeNeutral() { return "NEUTRAL" }
+  static effectTypeHarmful() { return "HARMFUL" }
+
+  static parseEffectType(input) {
+    let upperCased = input.toUpperCase();
+
+    switch (upperCased) {
+      case "NEUTRAL":
+        return TrackableEffectModel.effectTypeNeutral();
+      case "HARMFUL":
+        return TrackableEffectModel.effectTypeHarmful();
+      default:
+        return TrackableEffectModel.effectTypeBeneficial();
+    }
   }
 }
 

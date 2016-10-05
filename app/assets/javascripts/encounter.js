@@ -94,7 +94,6 @@ let EncounterModel = class {
   addCharacter(character) {
     if (this.findCharacter(character.name())) {
         throw new Error("CharacterNameAlreadyTaken");
-        return;
     }
 
     this.characters.push(character);
@@ -103,7 +102,6 @@ let EncounterModel = class {
   addEffect(effect, targets) {
     if (this.findEffect(effect.title())) {
         throw new Error("EffectNameAlreadyTaken");
-        return;
     }
 
     this.effects.push(effect);
@@ -146,8 +144,8 @@ let EncounterModel = class {
             return ch.rankInCombat() === newRankInCurrentRound
                 && ch.status() !== CharacterModel.characterStatusOutOfCombat();
         });
-        for (var character of aboutToActCharacters) {
-            character.status(CharacterModel.characterStatusCurrentlyActing());
+        for (var ch of aboutToActCharacters) {
+            ch.status(CharacterModel.characterStatusCurrentlyActing());
         }
 
         let newRankEffects = ko.utils.arrayFilter(this.effects(), (eff) => {
