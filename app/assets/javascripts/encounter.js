@@ -134,29 +134,43 @@ let EncounterModel = class {
         newRankInCurrentRound = 1;
         //Unit-test => publish newRound event
     }
-    
-    this.rankInCurrentRound(newRankInCurrentRound);
-    
-    let aboutToActCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
-        return ch.rankInCombat() === newRankInCurrentRound
-            && ch.status() !== CharacterModel.characterStatusOutOfCombat();
-    });
-    for (var character of aboutToActCharacters) {
-        character.status(CharacterModel.characterStatusCurrentlyActing());
-    }
 
-    let newRankEffects = ko.utils.arrayFilter(this.effects(), (eff) => {
-        return eff.rankInCombat() === newRankInCurrentRound
-            && eff.duration() !== -1;
-    });
-    for (var effect of newRankEffects) {
-        effect.duration(effect.duration() - 1);
-        if (effect.duration() === 0) {
-            this.removeEffect(effect);
+    let noCharactersToPlay = true;
+    let referenceRankInCurrentRound = newRankInCurrentRound;
+
+    //TODO => add tests for skip when all players are out of combat for a rank
+    do {
+        this.rankInCurrentRound(referenceRankInCurrentRound);
+
+        let aboutToActCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
+            return ch.rankInCombat() === newRankInCurrentRound
+                && ch.status() !== CharacterModel.characterStatusOutOfCombat();
+        });
+        for (var character of aboutToActCharacters) {
+            character.status(CharacterModel.characterStatusCurrentlyActing());
+        }
+
+        let newRankEffects = ko.utils.arrayFilter(this.effects(), (eff) => {
+            return eff.rankInCombat() === newRankInCurrentRound
+                && eff.duration() !== -1;
+        });
+        for (var effect of newRankEffects) {
+            effect.duration(effect.duration() - 1);
+            if (effect.duration() === 0) {
+                this.removeEffect(effect);
+            }
+        }
+        //implement a skip if we dont have any players except outOfCombat
+        if (aboutToActCharacters.length === 0) {
+            referenceRankInCurrentRound += 1;
+            if (referenceRankInCurrentRound > maxRank) {
+                referenceRankInCurrentRound = 1;
+            }
+        } else {
+            noCharactersToPlay = false;
         }
     }
-    //implement a skip if we dont have any players except outOfCombat
-    
+    while (noCharactersToPlay && this.rankInCurrentRound() !== referenceRankInCurrentRound)
   }
 }
 
