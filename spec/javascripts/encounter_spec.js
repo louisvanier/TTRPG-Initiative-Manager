@@ -278,5 +278,34 @@ describe("EncounterModel", () => {
       encounter.next();
       expect(encounter.effects()[0].duration()).toEqual(3);
     });
+    it("should remove effect with a duration of 0", () => {
+      let bloodGodEffect = encounter.effects()[0];
+      bloodGodEffect.duration(1);
+      encounter.next();
+      expect(encounter.findEffect(bloodGodEffect.title())).toEqual(null);
+    });
+    it("should not adjust duration of -1(infinite) effects", () => {
+      let bloodGodEffect = encounter.effects()[0];
+      bloodGodEffect.duration(-1);
+      encounter.next();
+      expect(encounter.findEffect(bloodGodEffect.title()).duration()).toEqual(-1);
+    });
+  });
+
+  describe("removeEffect", () => {
+    let bloodGodEffect = null;
+    beforeEach(() => {
+      encounter.update(modelData);
+      bloodGodEffect = encounter.effects()[0];
+    });
+
+    it("should remove the effect from the targetsAndEffects map", () => {
+      encounter.removeEffect(bloodGodEffect);
+      expect(encounter.targetsAndEffects.has(bloodGodEffect)).toEqual(false);
+    });
+    it("should remove the effect from the effects list", () => {
+      encounter.removeEffect(bloodGodEffect);
+      expect(encounter.findEffect(bloodGodEffect.title())).toEqual(null);
+    });
   });
 });

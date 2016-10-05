@@ -84,8 +84,7 @@ let EncounterModel = class {
     let removed = this.targetsAndEffects.get(effect).delete(target);
     if (removed) {
         if (this.targetsAndEffects.get(effect).size === 0) {
-            this.effects.remove(effect);
-            this.targetsAndEffects.delete(effect);
+            this.removeEffect(effect);
         }
     }
 
@@ -115,6 +114,12 @@ let EncounterModel = class {
     }
   }
 
+  removeEffect(effect) {
+    this.effects.remove(effect);
+    this.targetsAndEffects.delete(effect);
+    //UNit-test => publish removedEffect event
+  }
+
   next() {
     let actingCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
         return ch.status() === CharacterModel.characterStatusCurrentlyActing();
@@ -141,15 +146,18 @@ let EncounterModel = class {
     }
 
     let newRankEffects = ko.utils.arrayFilter(this.effects(), (eff) => {
-        return eff.rankInCombat() === newRankInCurrentRound;
+        return eff.rankInCombat() === newRankInCurrentRound
+            && eff.duration() !== -1;
     });
     for (var effect of newRankEffects) {
         effect.duration(effect.duration() - 1);
+        if (effect.duration() === 0) {
+            this.removeEffect(effect);
+        }
     }
-    //decrease duration of all effects by 1. Let effects bubble up done effects by pubsub
     //implement a skip if we dont have any players except outOfCombat
     
   }
 }
 
-exports.encounter = EncounterModel
+exports.encounter = EncounterModel;
