@@ -136,12 +136,11 @@ let EncounterModel = class {
     let noCharactersToPlay = true;
     let referenceRankInCurrentRound = newRankInCurrentRound;
 
-    //TODO => add tests for skip when all players are out of combat for a rank
     do {
         this.rankInCurrentRound(referenceRankInCurrentRound);
 
         let aboutToActCharacters = ko.utils.arrayFilter(this.characters(), (ch) => {
-            return ch.rankInCombat() === newRankInCurrentRound
+            return ch.rankInCombat() === referenceRankInCurrentRound
                 && ch.status() !== CharacterModel.characterStatusOutOfCombat();
         });
         for (var ch of aboutToActCharacters) {
@@ -158,7 +157,7 @@ let EncounterModel = class {
                 this.removeEffect(effect);
             }
         }
-        //implement a skip if we dont have any players except outOfCombat
+
         if (aboutToActCharacters.length === 0) {
             referenceRankInCurrentRound += 1;
             if (referenceRankInCurrentRound > maxRank) {
@@ -166,6 +165,9 @@ let EncounterModel = class {
             }
         } else {
             noCharactersToPlay = false;
+            for (let ch of aboutToActCharacters) {
+              ch.status(CharacterModel.characterStatusCurrentlyActing());
+            }
         }
     }
     while (noCharactersToPlay && this.rankInCurrentRound() !== referenceRankInCurrentRound)

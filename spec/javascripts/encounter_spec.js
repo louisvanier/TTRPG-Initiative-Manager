@@ -290,6 +290,18 @@ describe("EncounterModel", () => {
       encounter.next();
       expect(encounter.findEffect(bloodGodEffect.title()).duration()).toEqual(-1);
     });
+    it("should skip over rankInCombat if all the players at that rank are OUT_OF_COMBAT", () => {
+      encounter.characters()[1].status("OUT_OF_COMBAT");
+      encounter.next();
+      expect(encounter.rankInCurrentRound()).toEqual(3);
+      expect(encounter.characters()[2].status()).toEqual("CURRENTLY_ACTING");
+    });
+    it("should skip over rankInCombat if all the players at that rank are OUT_OF_COMBAT but not loop infinitely", () => {
+      encounter.characters()[1].status("OUT_OF_COMBAT");
+      encounter.characters()[2].status("OUT_OF_COMBAT");
+      expect(encounter.rankInCurrentRound()).toEqual(1);
+      expect(encounter.characters()[0].status()).toEqual("CURRENTLY_ACTING");
+    });
   });
 
   describe("removeEffect", () => {

@@ -36,7 +36,7 @@ let TrackableEffectModel = class {
       this.duration(duration);
     }
 
-    data.effectType(TrackableEffectModel.parseEffectType(data.effectType || ""));
+    this.effectType(TrackableEffectModel.parseEffectType(data.effectType || ""));
   }
 
   static effectTypeBeneficial() { return "BENEFICIAL" }
