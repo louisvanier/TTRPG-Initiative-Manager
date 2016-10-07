@@ -28,17 +28,19 @@ describe("CharacterModel", () => {
   });
 
   describe("update model", () => {
-    it("should properly set name, rankInCombat and status", () => {
+    it("should properly set name, rankInCombat, status and isPlayerControlled", () => {
       let modelData = {
         name: "Jabba",
         rankInCombat: "3",
-        status: CharacterModel.characterStatusReadying()
+        status: CharacterModel.characterStatusReadying(),
+        isPlayerControlled: true
       };
 
       character.update(modelData);
       expect(character.name()).toEqual("Jabba");
       expect(character.rankInCombat()).toEqual(3);
       expect(character.status()).toEqual("READYING");
+      expect(character.isPlayerControlled()).toEqual(true);
     });
 
     it("should default name to 'New Character'", () => {
@@ -69,6 +71,16 @@ describe("CharacterModel", () => {
 
       character.update(modelData);
       expect(character.status()).toEqual("ABOUT_TO_ACT");
+    });
+
+    it("should default isPlayerControlled to false", () => {
+      let modelData = {
+        name: "Jabba",
+        status: CharacterModel.characterStatusReadying()
+      };
+
+      character.update(modelData);
+      expect(character.isPlayerControlled()).toEqual(false);
     });
   });
 });

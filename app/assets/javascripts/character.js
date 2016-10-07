@@ -5,6 +5,8 @@ let CharacterModel = class {
     this.name = ko.observable();
     this.rankInCombat = ko.observable();
     this.status = ko.observable();
+    this.isPlayerControlled = ko.observable();
+
     this.hasntPlayedYet = ko.computed(() => {
       return this.status() === CharacterModel.characterStatusAboutToAct()
       || this.status() === CharacterModel.characterStatusDelaying();
@@ -28,6 +30,7 @@ let CharacterModel = class {
     }
 
     this.status(CharacterModel.parseCharacterStatus(data.status || ""));
+    this.isPlayerControlled(data.isPlayerControlled || false);
 
   }
 
