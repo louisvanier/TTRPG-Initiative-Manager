@@ -7,7 +7,10 @@ let EncounterModel = class {
     //--------------
     //not observable
     //--------------
+    //key => effect, value => Set(characters)
     this.targetsAndEffects = new Map();
+    //key => character, value => Set(effects)
+    this.effectsPerTarget = new Map();
 
     //--------------
     //basic info
@@ -72,20 +75,21 @@ let EncounterModel = class {
   }
 
   addTargetToEffect(effect, target) {
-    if (!this.targetsAndEffects.get(effect)) {
-        this.targetsAndEffects.set(effect, new Set());
-    }
     this.targetsAndEffects.get(effect).add(target);
+    this.effectsPerTarget.get(target).add(effect);
 
     return this;
   }
 
   removeTargetFromEffect(effect, target) {
-    let removed = this.targetsAndEffects.get(effect).delete(target);
-    if (removed) {
-        if (this.targetsAndEffects.get(effect).size === 0) {
-            this.removeEffect(effect);
-        }
+    let removedEffect = this.effectsPerTarget.get(target).delete(effect);
+    if (removedEffect && this.effectsPerTarget.get(target).size === 0) {
+      this.effectsPerTarget.delete(target);
+    }
+
+    let removedTarget = this.targetsAndEffects.get(effect).delete(target);
+    if (removedTarget && this.targetsAndEffects.get(effect).size === 0) {
+      this.removeEffect(effect);
     }
 
     return removed;
@@ -96,6 +100,7 @@ let EncounterModel = class {
         throw new Error("CharacterNameAlreadyTaken");
     }
 
+    this.effectsPerTarget.set(target, new Set());
     this.characters.push(character);
   }
 
@@ -104,6 +109,7 @@ let EncounterModel = class {
         throw new Error("EffectNameAlreadyTaken");
     }
 
+    this.targetsAndEffects.set(effect, new Set());
     this.effects.push(effect);
     if (targets) {
         for (let target of targets) {
