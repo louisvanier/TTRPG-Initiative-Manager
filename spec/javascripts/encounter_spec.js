@@ -114,40 +114,6 @@ describe("EncounterModel", () => {
     });
   });
 
-  describe("addTargetToEffect", () => {
-    let jimmay = null;
-    let timmay = null;
-    let newEffect = new TrackableEffectModel();
-    newEffect.update({
-      title: 'Curse of the red moon',
-      description: 'add target to effect',
-      duration: 3,
-      effectType: "HARMFUL",
-      targets: ['Jimmay']
-    });
-    beforeEach(() => {
-      encounter.update(modelData);
-      jimmay = encounter.characters()[0];
-      timmay = encounter.characters()[1];
-    });
-
-    it("should add the new effect and the target to targetsAndEffects", () => {
-      expect(encounter.targetsAndEffects.has(newEffect)).toEqual(false);
-      encounter.addTargetToEffect(newEffect, jimmay);
-      expect(encounter.targetsAndEffects.get(newEffect).has(jimmay)).toEqual(true);
-    });
-    it("should not create a new Set for targets when the effect already exists", () => {
-      spyOn(encounter.targetsAndEffects, 'set').and.callThrough();
-      expect(encounter.targetsAndEffects.set.calls.count()).toEqual(0)
-
-      encounter.addTargetToEffect(newEffect, jimmay);
-      expect(encounter.targetsAndEffects.set.calls.count()).toEqual(1)
-      
-      encounter.addTargetToEffect(newEffect, timmay);
-      expect(encounter.targetsAndEffects.set.calls.count()).toEqual(1);
-    });
-  });
-
   describe("removeTargetFromEffect", () => {
     let jimmay = null;
     let timmay = null;
@@ -175,10 +141,9 @@ describe("EncounterModel", () => {
       expect(encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay)).toEqual(true);
     });
     it("should not remove the effect if there are targets left", () => {
-      spyOn(encounter.effects, 'remove').and.callThrough();
-      encounter.addTargetToEffect(bloodForTheBloodGod, jimmay);
+      encounter.targetsAndEffects.get(bloodForTheBloodGod).add(encounter.characters()[0]);
       encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay);
-      expect(encounter.effects.remove.calls.count()).toEqual(0);
+      expect(encounter.effects().length).toEqual(1);
     });
     it("should remove the effect if there are no more targets", () => {
       expect(encounter.targetsAndEffects.get(bloodForTheBloodGod).size).toEqual(1);

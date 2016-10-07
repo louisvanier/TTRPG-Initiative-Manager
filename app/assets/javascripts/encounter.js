@@ -44,21 +44,19 @@ let EncounterModel = class {
     (data.characters || []).forEach((characterData) => {
       let character = new CharacterModel();
       character.update(characterData);
-      this.characters.push(character);
+      this.addCharacter(character);
     }, this);
     (data.effects || []).forEach((effectData) => {
       let effect = new TrackableEffectModel();
       effect.update(effectData);
-      this.effects.push(effect);
 
+      let targets = [];
       if (effectData.targets) {
-        for (let targetName of effectData.targets) {
-          let character = this.findCharacter(targetName);
-          if (character !== null) {
-            this.addTargetToEffect(effect, character);
-          }
-        }
+        targets = effectData.targets.map((target) => { return this.findCharacter(target); })
+                                    .filter((character) => { return character !== null; });
+
       }
+      this.addEffect(effect, targets);
     }, this);
   }
 
@@ -74,13 +72,6 @@ let EncounterModel = class {
     });
   }
 
-  addTargetToEffect(effect, target) {
-    this.targetsAndEffects.get(effect).add(target);
-    this.effectsPerTarget.get(target).add(effect);
-
-    return this;
-  }
-
   removeTargetFromEffect(effect, target) {
     let removedEffect = this.effectsPerTarget.get(target).delete(effect);
     if (removedEffect && this.effectsPerTarget.get(target).size === 0) {
@@ -92,7 +83,7 @@ let EncounterModel = class {
       this.removeEffect(effect);
     }
 
-    return removed;
+    return removedEffect;
   }
 
   addCharacter(character) {
@@ -100,7 +91,7 @@ let EncounterModel = class {
         throw new Error("CharacterNameAlreadyTaken");
     }
 
-    this.effectsPerTarget.set(target, new Set());
+    this.effectsPerTarget.set(character, new Set());
     this.characters.push(character);
   }
 
@@ -113,7 +104,7 @@ let EncounterModel = class {
     this.effects.push(effect);
     if (targets) {
         for (let target of targets) {
-            this.addTargetToEffect(effect, target);
+            this._addTargetToEffect(effect, target);
         }
     }
   }
@@ -177,6 +168,13 @@ let EncounterModel = class {
         }
     }
     while (noCharactersToPlay && this.rankInCurrentRound() !== referenceRankInCurrentRound)
+  }
+
+  _addTargetToEffect(effect, target) {
+    this.targetsAndEffects.get(effect).add(target);
+    this.effectsPerTarget.get(target).add(effect);
+
+    return this;
   }
 }
 
