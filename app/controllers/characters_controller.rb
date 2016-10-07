@@ -13,7 +13,7 @@ class CharactersController < ApplicationController
   end
 
   def show
-    @character = character.find(params[:id])
+    @character = Character.find(params[:id])
  
     respond_to do |format|
       format.html # show.html.erb
@@ -21,7 +21,7 @@ class CharactersController < ApplicationController
   end
  
   def new
-    @character = character.new
+    @character = Character.new
  
     respond_to do |format|
       format.html # new.html.erb
@@ -29,11 +29,11 @@ class CharactersController < ApplicationController
   end
  
   def edit
-    @character = character.find(params[:id])
+    @character = Character.find(params[:id])
   end
  
   def create
-    @character = character.new(params[:character])
+    @character = Character.new(character_params)
  
     respond_to do |format|
       if @character.save
@@ -47,10 +47,10 @@ class CharactersController < ApplicationController
   end
  
   def update
-    @character = character.find(params[:id])
+    @character = Character.find(params[:id])
  
     respond_to do |format|
-      if @character.update_attributes(params[:character])
+      if @character.update_attributes(character_params)
         format.html { redirect_to(@character, :notice => 'character was successfully updated.') }
         format.json { render :json => @character}
       else
@@ -61,7 +61,7 @@ class CharactersController < ApplicationController
   end
  
   def destroy
-    @character = character.find(params[:id])
+    @character = Character.find(params[:id])
     @character.destroy
  
     respond_to do |format|
@@ -78,6 +78,6 @@ class CharactersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def character_params
-      params.require(:character).permit(:name, :description)
+      params.require(:character).permit(:name, :description, :is_player_controlled)
     end
 end

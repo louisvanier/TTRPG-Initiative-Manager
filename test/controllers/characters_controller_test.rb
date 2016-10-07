@@ -17,7 +17,7 @@ class CharactersControllerTest < ActionDispatch::IntegrationTest
 
   test "should create character" do
     assert_difference('Character.count') do
-      post characters_url, params: { character: { description: 'test data', name: 'Johnny test' } }
+      post characters_url, params: { character: { description: 'test data', name: 'Johnny test', is_player_controlled: true } }
     end
 
     assert_redirected_to character_path(Character.last)
@@ -34,7 +34,7 @@ class CharactersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update character" do
-    patch character_url(@character), params: { character: { description: @character.description, name: @character.name } }
+    patch character_url(@character), params: { character: { description: 'Dark lord of the Sith, incidentally lukes father', name: @character.name } }
     assert_redirected_to character_path(@character)
   end
 
