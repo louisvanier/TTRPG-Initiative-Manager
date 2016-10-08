@@ -41,6 +41,20 @@ let CharacterModel = class {
   static characterStatusOutOfCombat() { return "OUT_OF_COMBAT"; }
   static characterStatusAlreadyActed() { return "ALREADY_ACTED"; }
 
+  static indexURL() {
+    return window.Configurations.paths.characters.index;
+  }
+  static createURL() {
+    return window.Configurations.paths.characters.new;
+  }
+  static updateURL(id) {
+    return window.Configurations.paths.characters.edit.replace(':id', id);
+  }
+  static destroyURL(id) {
+    return window.Configurations.paths.characters.edit.replace(':id', id);
+  }
+
+
   static parseCharacterStatus(input) {
     let upperCased = input.toUpperCase();
 
