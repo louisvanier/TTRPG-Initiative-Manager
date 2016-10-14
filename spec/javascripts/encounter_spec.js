@@ -149,7 +149,7 @@ describe("EncounterModel", () => {
       expect(encounter.targetsAndEffects.get(bloodForTheBloodGod).size).toEqual(1);
       encounter.removeTargetFromEffect(bloodForTheBloodGod, timmay);
       expect(encounter.targetsAndEffects.get(bloodForTheBloodGod)).not.toBeDefined();
-      expect(ko.utils.arrayFirst(encounter.effects(), (eff) => { eff === bloodForTheBloodGod})).toEqual(null);
+      expect(encounter.findEffect(bloodForTheBloodGod.title)).toEqual(null);
     });
   });
 

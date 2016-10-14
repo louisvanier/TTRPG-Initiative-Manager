@@ -1,29 +1,122 @@
-<p id="notice"><%= notice %></p>
+<script>
+  window.Configurations = window.Configurations || {};
+  window.Configurations.paths = window.Configurations.paths || {};
+  window.Configurations.paths.characters = window.Configurations.paths.characters || {};
+  window.Configurations.paths.characters.index = '<%= characters_path %>';
+  window.Configurations.paths.characters.create = '<%= characters_path %>';
+  window.Configurations.paths.characters.edit = '<%= edit_character_path(:id) %>';
+  window.Configurations.paths.characters.delete = '<%= character_path(:id) %>';
+</script>
+<%= javascript_include_tag("characterCrud") %>
+<script id="errorsTemplate" type="text/html">
+  <li>
+    <b><span data-bind="text: $data"/></b>
+  </li>
+</script>
 
-<h1>Characters</h1>
+    <!-- /// 2 -->
+<script id="indexTemplate" type="text/html">
+  <tr>
+    <!-- /// 3 -->
+    <td data-bind="text: name"></td>
+    <td data-bind="text: characterType"></td>
+    <!-- /// 4 -->
+    <td>
+      <a data-bind="click: function() { $root.showAction($data) }">Show</a>
+    </td>
+    <td>
+      <a data-bind="click: function() { $root.editAction($data) }">Edit</a>
+    </td>
+    <td>
+      <a data-bind="click: function() { $root.destroyAction($data) }">Delete</a>
+    </td>
+  </tr>
+</script>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+    <!-- /// 5 -->
+<script id="showTemplate" type="text/html">
+  <p>
+    <b>Name</b><br/>
+    <span data-bind="text: name"></span>
+  </p>
+  <p>
+    <b>Player?</b><br/>
+    <span data-bind="text: function() { return $data.characterType; }"></span>
+  </p>
+  <p>
+    <!-- /// 6 -->
+    <a data-bind="click: function() { $root.currentPage('index') }">Back</a>
+    <a data-bind="click: function() { $root.editAction($data) }">Edit</a>
+  </p>
+</script>
 
-  <tbody>
-    <% @characters.each do |character| %>
+    <!-- /// 7 -->
+<script id="editTemplate" type="text/html">
+  <form id="form">
+    <div class="field">
+      <label for="character_name">Name</label><br />
+      <input id="character_name" data-bind="value: name" />
+
+    </div>
+    <div class="field">
+      <label for="character_isPlayerControlled">Player?</label><br />
+      <input type="checkbox" id="character_isPlayerControlled" data-bind="checked: isPlayerControlled" />
+    </div>
+  </form>
+  <div>
+    <button data-bind="click: function() { $root.updateAction($data) }">Save</button>
+    <a data-bind="click: function() { $root.currentPage('index')}">Cancel</a>
+  </div>
+</script>
+
+<script id="newTemplate" type="text/html">
+  <form id="form">
+    <div class="field">
+      <label for="character_name">Name</label><br />
+      <input id="character_name" data-bind="value: name" />
+
+    </div>
+    <div class="field">
+      <label for="character_isPlayerControlled">Player?</label><br />
+      <input type="checkbox" id="character_isPlayerControlled" data-bind="checked: isPlayerControlled" />
+    </div>
+  </form>
+  <div>
+    <button data-bind="click: function() { $root.createAction($data) }">Create</button>
+    <a data-bind="click: function() { $root.currentPage('index') }">Cancel</a>
+  </div>
+</script>
+
+
+    <!-- /// 9 -->
+<ul data-bind='template: {name: "errorsTemplate", foreach: errors}'></ul>
+<!-- /// 10 -->
+<span data-bind='text: flash'></span>
+<!-- /// 11 -->
+<div data-bind='visible: currentPage() == "index"'>
+  <table>
+    <thead>
       <tr>
-        <td><%= character.name %></td>
-        <td><%= character.description %></td>
-        <td><%= link_to 'Show', character %></td>
-        <td><%= link_to 'Edit', edit_character_path(character) %></td>
-        <td><%= link_to 'Destroy', character, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Name</th>
+        <th>Player?</th>
+        <th></th>
+        <th></th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody data-bind='template: {name: "indexTemplate", foreach: items}'></tbody>
+  </table>
+  <a data-bind='click: function() { $root.newAction() }'>New character</a><br />
+</div>
 
-<br>
+<div data-bind='visible: currentPage() == "show"'>
+  <div data-bind='template: {name: "showTemplate", data: selectedItem}'></div>
+</div>
 
-<%= link_to 'New Character', new_character_path %>
+<div data-bind='visible: currentPage() == "edit"'>
+  <div data-bind='template: {name: "editTemplate", data: tempItem, templateOptions: { selectedItem: selectedItem}}'></div>
+</div>
+
+<div data-bind='visible: currentPage() == "new"'>
+  <div data-bind='template: {name: "newTemplate", data: tempItem}'></div>
+</div>

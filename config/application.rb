@@ -25,5 +25,14 @@ module InitManager
         p.start_with?(Rails.root.join('spec/javascripts').to_s)
       end
     end
+
+    #add node_modules to assets paths
+    config.assets.paths << Rails.root.join('node_modules')
+
+    config.webpack = {
+      use_manifest: false,
+      asset_manifest: {},
+      common_manifest: {},
+    }
   end
 end

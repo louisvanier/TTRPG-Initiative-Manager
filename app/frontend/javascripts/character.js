@@ -1,12 +1,16 @@
-let ko = require('knockout')
+let ko = require('knockout');
 
 let CharacterModel = class {
   constructor() {
+    this.id = null;
     this.name = ko.observable();
     this.rankInCombat = ko.observable();
     this.status = ko.observable();
     this.isPlayerControlled = ko.observable();
 
+    this.characterType = ko.pureComputed(function() {
+      return this.isPlayerControlled()? 'Player' : 'NPC';
+    }, this);
     this.hasntPlayedYet = ko.computed(() => {
       return this.status() === CharacterModel.characterStatusAboutToAct()
       || this.status() === CharacterModel.characterStatusDelaying();
@@ -16,11 +20,12 @@ let CharacterModel = class {
       || this.status() === CharacterModel.characterStatusAlreadyActed();
     });
     this.hasDelayedCurrentRound = ko.computed(() => {
-      return this.status() === CharacterModel.characterStatusDelaying();
+      
     });
   }
 
   update(data) {
+    this.id = data.id || null;
     this.name(data.name || "New Character");
     let rankInCombat = parseInt(data.rankInCombat || "1", 10);
     if (isNaN(rankInCombat)) {
@@ -45,13 +50,16 @@ let CharacterModel = class {
     return window.Configurations.paths.characters.index;
   }
   static createURL() {
-    return window.Configurations.paths.characters.new;
+    return window.Configurations.paths.characters.create;
   }
   static updateURL(id) {
-    return window.Configurations.paths.characters.edit.replace(':id', id);
+    return window.Configurations.paths.characters.edit.replace('/id/', '/' + id + '/');
   }
   static destroyURL(id) {
-    return window.Configurations.paths.characters.edit.replace(':id', id);
+    return window.Configurations.paths.characters.delete.replace('/id', '/' + id);
+  }
+  static jsonRoot() {
+    return 'character';
   }
 
 
@@ -78,4 +86,4 @@ let CharacterModel = class {
 
 }
 
-exports.character = CharacterModel
+exports.character = CharacterModel;

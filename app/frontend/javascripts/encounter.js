@@ -1,6 +1,6 @@
 let ko = require('knockout')
-let TrackableEffectModel = require('trackableEffect.js').trackableEffect;
-let CharacterModel = require('character.js').character;
+let TrackableEffectModel = require('trackableEffect').trackableEffect;
+let CharacterModel = require('character').character;
 
 let EncounterModel = class {
   constructor() {
